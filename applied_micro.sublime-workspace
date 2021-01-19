@@ -8,10 +8,19 @@
 	"buffers":
 	[
 		{
-			"file": "setup.do",
+			"file": "micro_globals.do",
 			"settings":
 			{
-				"buffer_size": 123,
+				"buffer_size": 1550,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "dyndoctest.txt",
+			"settings":
+			{
+				"buffer_size": 3621,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -28,6 +37,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"install\t\t",
+				"Package Control: Install Package"
+			],
 			[
 				"in",
 				"Package Control: Install Package"
@@ -65,10 +78,12 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/danielmangan/Documents/GitHub/Applied-Micro"
+		"//Client/H$/Documents/GitHub/Applied-Micro"
 	],
 	"file_history":
 	[
+		"//Client/H$/Documents/GitHub/Applied-Micro/dyndoctest.do",
+		"//Client/H$/Documents/GitHub/Applied-Micro/setup.do",
 		"/Users/danielmangan/Documents/GitHub/Personal Data/workouts.do",
 		"/Users/danielmangan/Downloads/forlaurel.do",
 		"/Users/danielmangan/Library/Application Support/Sublime Text 3/Packages/User/header.sublime-snippet"
@@ -111,30 +126,59 @@
 			[
 				{
 					"buffer": 0,
-					"file": "setup.do",
+					"file": "micro_globals.do",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 123,
+						"buffer_size": 1550,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								78,
-								78
+								498,
+								498
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Stata Improved Editor/Stata.tmLanguage"
+							"syntax": "Packages/StataEditor/StataEditor.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "dyndoctest.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3621,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								14,
+								14
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/StataEditor/StataEditor.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -181,7 +225,7 @@
 	{
 		"height": 44.0
 	},
-	"save_all_on_build": true,
+	"save_all_on_build": false,
 	"select_file":
 	{
 		"height": 0.0,

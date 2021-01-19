@@ -20,13 +20,13 @@
 	
 	glob runner "dama1833"	
 
-	*glob system "citrix"
-	glob system "local"
+	glob system "citrix"
+	*glob system "local"
 
 	
 	if "${system}"=="citrix" { 
-		glob drive "E:\"
-		glob syntaxpath "C:\Users\\${runner}\Documents\GitHub\Applied-Micro\"
+		glob drive "H:\"
+		glob syntaxpath "H:\GitHub\Applied-Micro\"
 		glob s "\"	
 	}
 
@@ -40,8 +40,8 @@
 		
 	}
 	
-	   glob projectpath 	"${drive}Applied Microeconomics${s}"	
-	   glob rawdatapath		"${projectpath}2 Raw Data${s}"
+	   glob projectpath 	"${drive}Applied-Micro${s}"	
+	   glob rawdatapath		"${projectpath}1 Raw Data${s}"
 	   glob gendatapath		"${projectpath}4 Generated Datasets${s}"
 	   glob tablespath		"${projectpath}3 Tables and Figures${s}"
 	   glob analyticpath	"${gendatapath}Analytic Datasets${s}"
@@ -64,3 +64,4 @@
 *********
 	
 	*run "${syntaxpath}variable_labels_micro.do" // run variable label globals file
+**
