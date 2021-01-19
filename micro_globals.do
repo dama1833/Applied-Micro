@@ -33,7 +33,7 @@
 
 	if "${system}"=="local" { 
 		if "${runner}"=="dama1833" {
-			glob drive "/Users/danielmangan/Documents/CU/Applied Microeconomics"
+			glob drive "/Users/danielmangan/Documents/CU/"
 			glob syntaxpath "/Users/danielmangan/Documents/GitHub/Applied-Micro/"	
 			glob s "/"
 		}
@@ -43,7 +43,7 @@
 	   glob projectpath 	"${drive}Applied Microeconomics${s}"	
 	   glob rawdatapath		"${projectpath}2 Raw Data${s}"
 	   glob gendatapath		"${projectpath}4 Generated Datasets${s}"
-	   glob tablespath		"${projectpath}5 Tables and Figures${s}"
+	   glob tablespath		"${projectpath}3 Tables and Figures${s}"
 	   glob analyticpath	"${gendatapath}Analytic Datasets${s}"
 	   glob intermedpath	"${gendatapath}Intermediary Datasets${s}"
 	   glob figurespath		"${tablespath}Raw Figures${s}"
@@ -51,7 +51,15 @@
 
 *********
 *
-*	1. Run variablel Labels globals
+*	1. Set directory (this helps with markdown)
+*
+*********
+
+	cd "${projectpath}statafiles"
+
+*********
+*
+*	2. Run variablel Labels globals
 *
 *********
 	
