@@ -39,7 +39,7 @@ Course: ECON 8848
 Author: Dan Mangan  
 Date: <<dd_display: c(current_date)>>
 
-## 1. Load data and get to know contents
+## 1. Load and get to know the data
 
 First, I will load the dataset into memory and produce an overview of its contents using the **describe** command.
 
@@ -78,3 +78,6 @@ su age
 ~~~~  
 
 We see here that the age variable ranges between <<dd_display: `r(min)'  >> and <<dd_display: `r(max)'  >> years.
+
+## 2. Getting the sample right
+
