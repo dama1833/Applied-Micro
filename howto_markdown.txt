@@ -1,0 +1,151 @@
+<<dd_remove>>
+*********************************************************************************																			
+*	TITLE: 		
+*	PROJECT:										
+*	PURPOSE:							
+*	AUTHOR:		Mangan		
+*	CREATED:	2020_
+*	UPDATED: 	2020_
+*	CALLS UPON:
+*	CALLED BY:
+* 	PRODUCES: 							
+*	CONTENTS:
+*		1. 
+*		2. 
+*		3. 
+*		4. 
+*		5. 
+*********************************************************************************
+<</dd_remove>>
+
+<<dd_version: 1>>
+<<dd_include: header.txt>>
+
+
+# Writing Markdown in Stata Using dyndoc 
+
+Dyndoc is an included command in Stata. Its features vary depending on what 
+version of Stata you have. Most importantly Stata 15 (dyndoc version 1) does not have the ability to 
+convert to .docx, where as Stata 16 (dyndoc version 2) does.  
+
+Dyndoc uses dynamic tags to tell Stata how to handle commands. Usually you will start your file with 
+two dynamic tags, **dd_version** and **dd_include**. The first tells Stata which dyndoc version you are
+using (see first paragraph), and the second references a separate header file that tells Stata how to use 
+the html style sheet. This style sheet (a .css file) is another separate file that needs to be saved 
+along with the header file to the same folder where Stata puts the target html file. It is with these files
+that we will begin. 
+
+# Getting Started 
+## Saving the header and css files
+
+In order to produce nicely formatted files, we first need to create two new files that will live in your target folder 
+(where Stata will save the html, text, graph, or whatever other files you create). For now, I have found that
+the easiest way to do this is to use the "cd" command to speficy a certain location. 
+
+These files are [available from Stata Press](https://www.stata-press.com/data/r15/markdown/). 
+Save **header.txt** and **stmarkdown.css** to the location you speficied above, keeping the same names and file extensions.
+
+## Beginning the markdown document 
+
+Next, you can begin coding the document. You'll want to save it as a .txt file, not .do. Begin with the two tags listed above:
+
+~~~~
+<<dd_ignore>>
+<<dd_version: 1>>
+<<dd_include: header.txt >>
+<</dd_ignore>>
+~~~~
+
+Then, skip at least two lines and you can insert a header using markdown syntax. 
+(**\#** For a first level header, **##** for second level, and ***###*** for third level). 
+
+There are plenty of fun things you can do with markdown syntax, but I won't cover them here. [This website](https://www.markdownguide.org/basic-syntax/#lists-1) may help. 
+
+# Embedding Stata Commands and Output
+## Using **dd_do** to run commands
+
+Let's load data first. We'll be using the **<<dd_do>>** tag with a "fence" consisting of four tildas. You can't see
+the tildas here, but I have four of them before the fist line of code below and four after. 
+
+Along with this "fence", writing the following code
+~~~~
+<<dd_ignore>>
+<<dd_do>>
+sysuse auto, clear
+su price
+<</dd_do>>
+<</dd_ignore>>
+~~~~
+
+will run the commands in Stata and produce the following output in your target file: 
+
+~~~~
+<<dd_do>>
+sysuse auto, clear
+su price
+<</dd_do>>
+~~~~
+
+Pretty sweet. 
+
+## Using **dd_display** to show stored results
+
+Say we want to use the minimum and maximum values of **weight** in a sentence.
+Instead of copying and pasting the numbers from the **summarize** output, we can
+use the **dd_display** Stata dynamic tag with the **r(min)** and **r(max)**
+stored results by writing the following code within a fence:
+
+~~~~
+<<dd_ignore>>
+The variable weight has minimum value <<dd_display: %4.2f `r(min)'>> and
+has maximum value <<dd_display: %4.2f `r(max)'>>.
+<</dd_ignore>>
+~~~~
+
+This produces the following in the target file:
+
+~~~~
+The variable weight has minimum value <<dd_display: %4.2f `r(min)'>>
+and has maximum value <<dd_display: %4.2f `r(max)'>>.
+~~~~
+
+## Inserting a graph in the target file 
+
+Now, we want to graph **mpg** and **weight** using a scatterplot. We use the
+**dd_do** tag with the **nooutput** attribute to generate the scatterplot
+first. The **nooutput** attribute leaves the command in the output only,
+
+~~~~
+<<dd_ignore>>
+<<dd_do:nooutput>>
+scatter mpg weight, mcolor(blue%50)
+<</dd_do>>
+<</dd_ignore>>
+~~~~
+
+which generates a scatterplot of **mpg** and **weight** with 50% opacity
+color markers.
+
+~~~~
+<<dd_do:nooutput>>
+scatter mpg weight, mcolor(blue%50)
+<</dd_do>>
+~~~~
+
+Now, we want to export the graph to a file and include an image link to the
+file.
+
+~~~~
+<<dd_ignore>>
+<<dd_graph: sav("graphthis.svg") alt("scatter mpg weight") replace height(400)>>
+<</dd_ignore>>
+~~~~
+
+This produces a graph of 400 pixels high.
+
+<<dd_graph: sav("graphthis.svg") alt("scatter mpg weight") replace height(400)>>
+
+
+<<dd_remove>>
+dyndoc ${syntaxpath}howto_markdown.txt, replace
+<</dd_remove>>

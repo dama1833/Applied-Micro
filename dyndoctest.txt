@@ -1,4 +1,4 @@
-<<dd_version: 2>>
+<<dd_version: 1>>
 <<dd_include: header.txt >>
 
 
@@ -137,6 +137,9 @@ This produces a graph of 400 pixels high.
 
 <<dd_graph: sav("graphthis.svg") alt("scatter mpg weight") replace height(400)>>
 
+<<dd_remove>>
+dyndoc ${syntaxpath}dyndoctest.txt, replace
+<</dd_remove>>
 
 
 

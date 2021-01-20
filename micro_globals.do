@@ -20,8 +20,10 @@
 	
 	glob runner "dama1833"	
 
-	glob system "citrix"
-	*glob system "local"
+
+
+	*glob system "citrix"
+	glob system "local"
 
 	
 	if "${system}"=="citrix" { 
@@ -65,3 +67,4 @@
 	
 	*run "${syntaxpath}variable_labels_micro.do" // run variable label globals file
 **
+
