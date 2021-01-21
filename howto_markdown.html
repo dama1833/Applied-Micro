@@ -1,0 +1,68 @@
+<head>
+  <link rel="stylesheet" type="text/css" href="stmarkdown.css">
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+</head>
+<h1><a href="#writing-markdown-in-stata-using-dyndoc" id="writing-markdown-in-stata-using-dyndoc">Writing Markdown in Stata Using dyndoc</a></h1>
+<p>Dyndoc is an included command in Stata. Its features vary depending on what version of Stata you have. Most importantly Stata 15 (dyndoc version 1) does not have the ability to convert to .docx, where as Stata 16 (dyndoc version 2) does.</p>
+<p>Dyndoc uses dynamic tags to tell Stata how to handle commands. Usually you will start your file with two dynamic tags, <strong>dd_version</strong> and <strong>dd_include</strong>. The first tells Stata which dyndoc version you are using (see first paragraph), and the second references a separate header file that tells Stata how to use the html style sheet. This style sheet (a .css file) is another separate file that needs to be saved along with the header file to the same folder where Stata puts the target html file. It is with these files that we will begin.</p>
+<h1><a href="#getting-started" id="getting-started">Getting Started</a></h1>
+<h2><a href="#saving-the-header-and-css-files" id="saving-the-header-and-css-files">Saving the header and css files</a></h2>
+<p>In order to produce nicely formatted files, we first need to create two new files that will live in your target folder (where Stata will save the html, text, graph, or whatever other files you create). For now, I have found that the easiest way to do this is to use the &ldquo;cd&rdquo; command to speficy a certain location.</p>
+<p>These files are <a href="https://www.stata-press.com/data/r15/markdown/">available from Stata Press</a>. Save <strong>header.txt</strong> and <strong>stmarkdown.css</strong> to the location you speficied above, keeping the same names and file extensions.</p>
+<h2><a href="#beginning-the-markdown-document" id="beginning-the-markdown-document">Beginning the markdown document</a></h2>
+<p>Next, you can begin coding the document. You&rsquo;ll want to save it as a .txt file, not .do. Begin with the two tags listed above:</p>
+<pre><code>&lt;&lt;dd_version: 1&gt;&gt;
+&lt;&lt;dd_include: header.txt &gt;&gt;
+</code></pre>
+<p>Then, skip at least two lines and you can insert a header using markdown syntax. (<strong>#</strong> For a first level header, <strong>##</strong> for second level, and <strong><em>###</em></strong> for third level).</p>
+<p>There are plenty of fun things you can do with markdown syntax, but I won&rsquo;t cover them here. <a href="https://www.markdownguide.org/basic-syntax/#lists-1">This website</a> may help.</p>
+<h1><a href="#embedding-stata-commands-and-output" id="embedding-stata-commands-and-output">Embedding Stata Commands and Output</a></h1>
+<h2><a href="#using-dd-do-to-run-commands" id="using-dd-do-to-run-commands">Using <strong>dd_do</strong> to run commands</a></h2>
+<p>Let&rsquo;s load data first. We&rsquo;ll be using the <strong>&laquo;dd_do&raquo;</strong> tag with a &ldquo;fence&rdquo; consisting of four tildas. You can&rsquo;t see the tildas here, but I have four of them before the fist line of code below and four after.</p>
+<p>Along with this &ldquo;fence&rdquo;, writing the following code</p>
+<pre><code>&lt;&lt;dd_do&gt;&gt;
+sysuse auto, clear
+su price
+&lt;&lt;/dd_do&gt;&gt;
+</code></pre>
+<p>will run the commands in Stata and produce the following output in your target file:</p>
+<pre><code>. sysuse auto, clear
+(1978 Automobile Data)
+
+. su price
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+       price |         74    6165.257    2949.496       3291      15906
+
+</code></pre>
+<p>Pretty sweet.</p>
+<h2><a href="#using-dd-display-to-show-stored-results" id="using-dd-display-to-show-stored-results">Using <strong>dd_display</strong> to show stored results</a></h2>
+<p>Say we want to use the minimum and maximum values of <strong>weight</strong> in a sentence. Instead of copying and pasting the numbers from the <strong>summarize</strong> output, we can use the <strong>dd_display</strong> Stata dynamic tag with the <strong>r(min)</strong> and <strong>r(max)</strong> stored results by writing the following code within a fence:</p>
+<pre><code>The variable weight has minimum value &lt;&lt;dd_display: %4.2f `r(min)'&gt;&gt; and
+has maximum value &lt;&lt;dd_display: %4.2f `r(max)'&gt;&gt;.
+</code></pre>
+<p>This produces the following in the target file:</p>
+<pre><code>The variable weight has minimum value 3291.00
+and has maximum value 15906.00.
+</code></pre>
+<h2><a href="#inserting-a-graph-in-the-target-file" id="inserting-a-graph-in-the-target-file">Inserting a graph in the target file</a></h2>
+<p>Now, we want to graph <strong>mpg</strong> and <strong>weight</strong> using a scatterplot. We use the <strong>dd_do</strong> tag with the <strong>nooutput</strong> attribute to generate the scatterplot first. The <strong>nooutput</strong> attribute leaves the command in the output only,</p>
+<pre><code>&lt;&lt;dd_do:nooutput&gt;&gt;
+scatter mpg weight, mcolor(blue%50)
+&lt;&lt;/dd_do&gt;&gt;
+</code></pre>
+<p>which generates a scatterplot of <strong>mpg</strong> and <strong>weight</strong> with 50% opacity color markers.</p>
+<pre><code>. scatter mpg weight, mcolor(blue%50)
+
+</code></pre>
+<p>Now, we want to export the graph to a file and include an image link to the file.</p>
+<pre><code>&lt;&lt;dd_graph: sav(&quot;graphthis.svg&quot;) alt(&quot;scatter mpg weight&quot;) replace height(400)&gt;&gt;
+</code></pre>
+<p>This produces a graph of 400 pixels high.</p>
+<img src="graphthis.svg" height="400" alt="scatter mpg weight" >
