@@ -1,0 +1,89 @@
+<<dd_remove>>
+*********************************************************************													
+*	TITLE: 		
+*	PROJECT:										
+*	PURPOSE:							
+*	AUTHOR:		Mangan		
+*	CREATED:	2020_
+*	UPDATED: 	2020_
+*	CALLS UPON:
+*	CALLED BY:
+* 	PRODUCES: 							
+*	CONTENTS:
+*		1. 
+*		2. 
+*********************************************************************
+<</dd_remove>>
+
+<<dd_version: 1 >>
+<<dd_include: header.txt>>
+
+
+<<dd_remove>>
+*******************************
+*
+*	1. Open Data
+*
+*******************************
+<</dd_remove>>
+
+
+# Problem Set 1 
+Course: ECON 8848  
+Author: Dan Mangan  
+Collaborators (in crime): Hannah Denker and Michelle Doughty    
+Date: <<dd_display: c(current_date)>> 
+
+## 1. Load and get to know data 
+
+In order to load data, type the following code:
+~~~~
+<<dd_ignore>>
+use "${rawdatapath}acs2007.dta", clear  
+describe 
+<</dd_ignore>>
+~~~~
+
+~~~~
+<<dd_do>>
+use "${rawdatapath}acs2007.dta", clear 
+describe 
+**comments
+<</dd_do>>
+~~~~
+
+## 2. More stuff
+
+
+<<dd_remove>>
+<<dd_do>>
+su age
+<</dd_do>>
+<</dd_remove>>
+
+
+The **age** variable ranges from <<dd_display: `r(min)'  >> to <<dd_display: `r(max)'  >>.
+
+
+<<dd_do: `quietly'>>
+describe
+<</dd_do>>
+
+
+This dataset has <<dd_display: %12.0fc `r(N)'  >> observations. 
+
+The formatting of the variables appears to be okay, though I would probabaly recode a couple of them: 
+<ol>
+<li>I would rename "sex" to be "female" and recode it as 0=male and 1=female.</li>
+<li>Missingness in incwage seems to be coded as "99999" but should be ".".</li>
+</ol>
+
+
+## 3. Make a graph
+
+Let's make a scatter of incwage on age. 
+
+
+
+
+
