@@ -1,0 +1,86 @@
+<head>
+  <link rel="stylesheet" type="text/css" href="stmarkdown.css">
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+</head>
+<h1><a href="#problem-set-1" id="problem-set-1">Problem Set 1</a></h1>
+<p>Course: ECON 8848<br />
+Author: Dan Mangan<br />
+Date: 20 Jan 2021</p>
+<h2><a href="#1-load-data-and-get-to-know-contents" id="1-load-data-and-get-to-know-contents">1. Load data and get to know contents</a></h2>
+<p>First, I will load the dataset into memory and produce an overview of its contents using the <strong>describe</strong> command.</p>
+<pre><code>. use &quot;${rawdatapath}acs2007.dta&quot;, clear 
+
+. describe
+
+Contains data from /Users/danielmangan/Documents/CU/Applied-Micro/1 Raw Data/acs2007.dta
+  obs:     2,913,425                          
+ vars:            14                          18 Aug 2009 16:53
+ size:    90,316,175                          
+--------------------------------------------------------------------------------------------------------
+              storage   display    value
+variable name   type    format     label      variable label
+--------------------------------------------------------------------------------------------------------
+year            int     %8.0g      yearlbl    Census year
+datanum         byte    %8.0g                 Data set number
+serial          double  %10.0g                Household serial number
+hhwt            int     %8.0g                 Household weight
+gq              byte    %43.0g     gqlbl      Group quarters status
+perwt           int     %8.0g                 Person weight
+age             int     %36.0g     agelbl     Age
+sex             byte    %8.0g      sexlbl     Sex
+marst           byte    %23.0g     marstlbl   Marital status
+bpl             long    %27.0g     bpllbl     Birthplace [general version]
+yrsusa1         byte    %8.0g                 Years in the United States
+educrec         byte    %23.0g     educreclbl
+                                              Educational attainment recode
+empstat         byte    %18.0g     empstatlbl
+                                              Employment status [general version]
+incwage         long    %12.0g                Wage and salary income
+--------------------------------------------------------------------------------------------------------
+Sorted by: 
+
+</code></pre>
+<p>This dataset    2,913,425 has observations and 14 variables.</p>
+<p>The formatting of the variables appears to be okay, though I would probabaly recode a couple of them:</p>
+<ul>
+<li>I would rename "sex" to be "female" and recode it as 0=male and 1=female.</li>
+<li>Missingness in incwage seems to be coded as "99999" but should be ".".</li>
+</ul>
+<p>Next, I summarize the dataset to examine each variable in more detail.</p>
+<pre><code>. su 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+        year |  2,913,425        2007           0       2007       2007
+     datanum |  2,913,425           1           0          1          1
+      serial |  2,913,425    675543.4    395790.3          4    1360285
+        hhwt |  2,913,425    97.06509    66.08678          1       1466
+          gq |  2,913,425    1.001459    .0464898          1          5
+-------------+---------------------------------------------------------
+       perwt |  2,913,425    100.7405    70.77215          1       2032
+         age |  2,913,425    38.89746    23.06821          0         95
+         sex |  2,913,425    1.517572    .4996912          1          2
+       marst |  2,913,425     3.49533    2.326408          1          6
+         bpl |  2,913,425    67.13137    117.2534          1        950
+-------------+---------------------------------------------------------
+     yrsusa1 |  2,913,425    2.457155    8.571573          0         88
+     educrec |  2,913,425    6.232514    2.705586          0          9
+     empstat |  2,913,425    1.386688    1.106982          0          3
+     incwage |  2,913,425      231183    398774.6          0     999999
+
+</code></pre>
+<p>As noted above, there is strange coding for missigness in the incwage variable. Genreally to find odd coding issues for missing values, we can check min and max values.</p>
+<p>To find the range of <strong>age</strong>, we can summarize only that variable.</p>
+<pre><code>. su age
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+         age |  2,913,425    38.89746    23.06821          0         95
+
+</code></pre>
+<p>We see here that the age variable ranges between 0 and 95.</p>
