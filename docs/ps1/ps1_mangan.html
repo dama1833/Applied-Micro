@@ -6,12 +6,12 @@
 <script type="text/javascript" async
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
 </script>
-</head>
+</head>cd "${ps1path}"
 <h1><a href="#problem-set-1" id="problem-set-1">Problem Set 1</a></h1>
 <p>Course: ECON 8848<br />
 Author: Dan Mangan<br />
-Date: 20 Jan 2021</p>
-<h2><a href="#1-load-data-and-get-to-know-contents" id="1-load-data-and-get-to-know-contents">1. Load data and get to know contents</a></h2>
+Date: 25 Jan 2021</p>
+<h2><a href="#1-load-and-get-to-know-the-data" id="1-load-and-get-to-know-the-data">1. Load and get to know the data</a></h2>
 <p>First, I will load the dataset into memory and produce an overview of its contents using the <strong>describe</strong> command.</p>
 <pre><code>. use &quot;${rawdatapath}acs2007.dta&quot;, clear 
 
@@ -21,10 +21,10 @@ Contains data from /Users/danielmangan/Documents/CU/Applied-Micro/1 Raw Data/acs
   obs:     2,913,425                          
  vars:            14                          18 Aug 2009 16:53
  size:    90,316,175                          
---------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------
               storage   display    value
 variable name   type    format     label      variable label
---------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------
 year            int     %8.0g      yearlbl    Census year
 datanum         byte    %8.0g                 Data set number
 serial          double  %10.0g                Household serial number
@@ -41,7 +41,7 @@ educrec         byte    %23.0g     educreclbl
 empstat         byte    %18.0g     empstatlbl
                                               Employment status [general version]
 incwage         long    %12.0g                Wage and salary income
---------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------
 Sorted by: 
 
 </code></pre>
@@ -83,4 +83,10 @@ Sorted by:
          age |  2,913,425    38.89746    23.06821          0         95
 
 </code></pre>
-<p>We see here that the age variable ranges between 0 and 95.</p>
+<p>We see here that the age variable ranges between 0 and 95 years.</p>
+<h2><a href="#2-getting-the-sample-right" id="2-getting-the-sample-right">2. Getting the sample right</a></h2>
+<p>Next, we will eliminate observations younger than 18 and older than 55 using <strong>drop</strong>.</p>
+<pre><code>. drop if age &lt; 18 | age &gt; 55
+(1,462,460 observations deleted)
+
+</code></pre>

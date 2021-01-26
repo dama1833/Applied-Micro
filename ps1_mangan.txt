@@ -22,11 +22,11 @@
 *
 *******************************
 <</dd_remove>>
-
 <<dd_version: 1>>
 <<dd_include: header.txt>>
-
+cd "${ps1path}"
 <<dd_remove>>
+
 *******************************
 *
 *	2. Open Data
@@ -81,3 +81,10 @@ We see here that the age variable ranges between <<dd_display: `r(min)'  >> and 
 
 ## 2. Getting the sample right
 
+Next, we will eliminate observations younger than 18 and older than 55 using **drop**.
+
+~~~~
+<<dd_do>>
+drop if age < 18 | age > 55
+<</dd_do>>
+~~~~

@@ -8,10 +8,21 @@
 	"buffers":
 	[
 		{
+			"contents": "*********************************************************************************\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n*\tTITLE: \t\tApplied Microeconometrics Master Globals File\t\t\t\t\t\n*\tPURPOSE:\t\t\t\t\t\n*\tAUTHOR:\t\tDaniel Mangan\t\t\t\t\t\t\t\t\t\t\t\t\n*\tCREATED:\t2021_0114\t\t\t\t\t\t\t\t\t\t\t\t\n*\tUPDATED: \t\n*\tCALLS UPON:\t\t\t\n*\tCALLED BY: \t\n*\t\t\t\t\t\t\n*\tPRODUCES: \tFigures:\tNO\n*\t\t\t\tDatasets:\t\n*\t\t\t\t\t\n*\tCONTENTS:\t\n*\t1. Set globals\n*********************************************************************************\n \n\tclear all\n\tset more off\n\tpause on\n\t\n\tglob runner \"dama1833\"\t\n\n\n\n\tglob system \"citrix\"\n\t*glob system \"local\"\n\n\t\n\tif \"${system}\"==\"citrix\" { \n\t\tglob drive \"H:\\\"\n\t\tglob syntaxpath \"H:\\GitHub\\Applied-Micro\\\"\n\t\tglob s \"\\\"\t\n\t}\n\n\n\tif \"${system}\"==\"local\" { \n\t\tif \"${runner}\"==\"dama1833\" {\n\t\t\tglob drive \"/Users/danielmangan/Documents/CU/\"\n\t\t\tglob syntaxpath \"/Users/danielmangan/Documents/GitHub/Applied-Micro/\"\t\n\t\t\tglob s \"/\"\n\t\t}\n\t\t\n\t}\n\t\n\t   glob projectpath \t\"${drive}Applied-Micro${s}\"\t\n\t   glob rawdatapath\t\t\"${projectpath}1 Raw Data${s}\"\n\t   glob gendatapath\t\t\"${projectpath}4 Generated Datasets${s}\"\n\t   glob tablespath\t\t\"${projectpath}3 Tables and Figures${s}\"\n\t   glob analyticpath\t\"${gendatapath}Analytic Datasets${s}\"\n\t   glob intermedpath\t\"${gendatapath}Intermediary Datasets${s}\"\n\t   glob figurespath\t\t\"${tablespath}Raw Figures${s}\"\n\n\n*********\n*\n*\t1. Set directory (this helps with markdown)\n*\n*********\n\n\tcd \"${projectpath}statafiles\"\n\n*********\n*\n*\t2. Run variablel Labels globals\n*\n*********\n\t\n\t*run \"${syntaxpath}variable_labels_micro.do\" // run variable label globals file\n**\n\n",
 			"file": "micro_globals.do",
+			"file_size": 1553,
+			"file_write_time": 132555695000000000,
 			"settings":
 			{
-				"buffer_size": 1550,
+				"buffer_size": 1553,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "docs/ps1/ps1_mangan.txt",
+			"settings":
+			{
+				"buffer_size": 1969,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -20,7 +31,7 @@
 			"file": "dyndoctest.txt",
 			"settings":
 			{
-				"buffer_size": 3621,
+				"buffer_size": 3694,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -78,7 +89,9 @@
 	},
 	"expanded_folders":
 	[
-		"//Client/H$/Documents/GitHub/Applied-Micro"
+		"//Client/H$/Documents/GitHub/Applied-Micro",
+		"//Client/H$/Documents/GitHub/Applied-Micro/docs",
+		"//Client/H$/Documents/GitHub/Applied-Micro/docs/ps1"
 	],
 	"file_history":
 	[
@@ -130,15 +143,28 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1550,
+						"buffer_size": 1553,
 						"regions":
 						{
+							"mark":
+							{
+								"flags": 144,
+								"icon": "Packages/Theme - Default/common/dot.png",
+								"regions":
+								[
+									[
+										1553,
+										1553
+									]
+								],
+								"scope": "mark"
+							}
 						},
 						"selection":
 						[
 							[
-								498,
-								498
+								1553,
+								1553
 							]
 						],
 						"settings":
@@ -155,19 +181,19 @@
 				},
 				{
 					"buffer": 1,
-					"file": "dyndoctest.txt",
+					"file": "docs/ps1/ps1_mangan.txt",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3621,
+						"buffer_size": 1969,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								14,
-								14
+								575,
+								575
 							]
 						],
 						"settings":
@@ -179,6 +205,34 @@
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "dyndoctest.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3694,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/StataEditor/StataEditor.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -241,6 +295,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"",
+				"C:\\Users\\dama1833\\Documents\\GitHub\\dps_sublime_project.sublime-project"
+			]
 		],
 		"width": 380.0
 	},
