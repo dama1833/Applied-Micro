@@ -150,3 +150,10 @@ body{font-size:16px;}
   p, h2, h3 { orphans: 3; widows: 3; }
   h2, h3 { page-break-after: avoid; }
 }
+
+<style>
+    #toc div.h1 { margin-left: 0 }
+    #toc div.h2 { margin-left: 1em }
+    #toc div.h3 { margin-left: 2em }
+    #toc div.h4 { margin-left: 3em }
+</style>

@@ -6,11 +6,49 @@
 <script type="text/javascript" async
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
 </script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    htmlTableOfContents();
+} );                        
+
+function htmlTableOfContents( documentRef ) {
+    var documentRef = documentRef || document;
+    var toc = documentRef.getElementById("toc");
+//  Use headings inside <article> only:
+//  var headings = [].slice.call(documentRef.body.querySelectorAll('article h1, article h2, article h3, article h4, article h5, article h6'));
+    var headings = [].slice.call(documentRef.body.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+    headings.forEach(function (heading, index) {
+        var ref = "toc" + index;
+        if ( heading.hasAttribute( "id" ) ) 
+            ref = heading.getAttribute( "id" );
+        else
+            heading.setAttribute( "id", ref );
+
+        var link = documentRef.createElement( "a" );
+        link.setAttribute( "href", "#"+ ref );
+        link.textContent = heading.textContent;
+
+        var div = documentRef.createElement( "div" );
+        div.setAttribute( "class", heading.tagName.toLowerCase() );
+        div.appendChild( link );
+        toc.appendChild( div );
+    });
+}
+
+
+try {
+    module.exports = htmlTableOfContents;
+} catch (e) {
+    // module.exports is not defined
+}
+</script>
 </head>
-<h1><a href="#problem-set-1" id="problem-set-1">Problem Set 1</a></h1>
+<p style="font-weight:800; font-size:42px; color:#4934eb">Problem Set 1</p>
 <p>Course: ECON 8848<br />
 Author: Dan Mangan<br />
+Collaborators: Hannah Denker and Michelle Doughty<br />
 Date: 26 Jan 2021</p>
+<nav id="toc"><strong><font size="5">Table of Contents</font></strong></nav>
 <h2><a href="#1-load-and-get-to-know-the-data" id="1-load-and-get-to-know-the-data">1. Load and get to know the data</a></h2>
 <p>First, I will load the dataset into memory and produce an overview of its contents using the <strong>describe</strong> command.</p>
 <pre><code>. use &quot;${rawdatapath}acs2007.dta&quot;, clear 
@@ -302,4 +340,4 @@ educreclbl:
 ------------------------------------------------------------------------------
 
 </code></pre>
-<p>Interestingly, being an immigrant appears to be associated with a slight increase of          6.2 in income, holding other variables constant.</p>
+<p>Interestingly, being an immigrant appears to be associated with a slight increase of          6.2 percent in income, holding other variables constant.</p>

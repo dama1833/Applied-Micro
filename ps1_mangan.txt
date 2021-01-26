@@ -34,11 +34,16 @@
 cd "${ps1path}"
 <</dd_remove>>
 
-# Problem Set 1
+
+<p style="font-weight:800; font-size:42px; color:#4934eb">Problem Set 1</p>
+
 Course: ECON 8848  
 Author: Dan Mangan  
-Collaborators: Hannah Denker and Michelle Doughty
+Collaborators: Hannah Denker and Michelle Doughty  
 Date: <<dd_display: c(current_date)>>
+
+
+<nav id="toc"><strong><font size="5">Table of Contents</font></strong></nav>
 
 ## 1. Load and get to know the data
 
