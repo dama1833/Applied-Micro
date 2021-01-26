@@ -222,6 +222,11 @@ We'll use the <code>save</code> command now to save a new copy of our dataset un
 I like to set global paths for each project in a separate .do file; the *gendatapath* global points
 Stata to where I want my generated datasets saved. 
 
+~~~~
+<<dd_do>>
+save "${gendatapath}asrecoded.dta", replace 
+<</dd_do>>
+~~~~
 
 
 # 4. Basic Analysis

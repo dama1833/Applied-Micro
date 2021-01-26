@@ -44,7 +44,7 @@
 	
 	   glob projectpath 	"${drive}Applied-Micro${s}"	
 	   glob rawdatapath		"${projectpath}1 Raw Data${s}"
-	   glob gendatapath		"${projectpath}4 Generated Datasets${s}"
+	   glob gendatapath		"${projectpath}2 Generated Datasets${s}"
 	   glob tablespath		"${projectpath}3 Tables and Figures${s}"
 	   glob analyticpath	"${gendatapath}Analytic Datasets${s}"
 	   glob intermedpath	"${gendatapath}Intermediary Datasets${s}"

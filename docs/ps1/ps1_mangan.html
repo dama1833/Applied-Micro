@@ -269,6 +269,11 @@ educreclbl:
 <p>Since the numbers are the same, this seems like a good explanation.</p>
 <h3><a href="#3f-save-as-new-dataset" id="3f-save-as-new-dataset">3f. Save as new dataset.</a></h3>
 <p>We&rsquo;ll use the <code>save</code> command now to save a new copy of our dataset under a different name. I like to set global paths for each project in a separate .do file; the <em>gendatapath</em> global points Stata to where I want my generated datasets saved.</p>
+<pre><code>. save &quot;${gendatapath}asrecoded.dta&quot;, replace 
+(note: file /Users/danielmangan/Documents/CU/Applied-Micro/2 Generated Datasets/asrecoded.dta not found)
+file /Users/danielmangan/Documents/CU/Applied-Micro/2 Generated Datasets/asrecoded.dta saved
+
+</code></pre>
 <h1><a href="#4-basic-analysis" id="4-basic-analysis">4. Basic Analysis</a></h1>
 <p>First, we will run a regression of logearn on educyears, exper, and expersq.</p>
 <pre><code>. reg logearn educyears exper expersq
