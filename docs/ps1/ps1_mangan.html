@@ -46,8 +46,8 @@ try {
 <p style="font-weight:800; font-size:42px; color:#4934eb">Problem Set 1</p>
 <p>Course: ECON 8848<br />
 Author: Dan Mangan<br />
-Collaborators: Hannah Denker and Michelle Doughty<br />
-Date: 27 Jan 2021</p>
+Collaborators: Hannah Denker, Michelle Doughty, and Rimjhim Saxena<br />
+Date: 28 Jan 2021</p>
 <nav id="toc"><strong><font size="5">Table of Contents</font></strong></nav>
 <h2><a href="#1-load-and-get-to-know-the-data" id="1-load-and-get-to-know-the-data">1. Load and get to know the data</a></h2>
 <p>First, I will load the dataset into memory and produce an overview of its contents using the <strong>describe</strong> command.</p>
@@ -59,10 +59,10 @@ Contains data from /Users/danielmangan/Documents/CU/Applied-Micro/1 Raw Data/acs
   obs:     2,913,425                          
  vars:            14                          18 Aug 2009 16:53
  size:    90,316,175                          
------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
               storage   display    value
 variable name   type    format     label      variable label
------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
 year            int     %8.0g      yearlbl    Census year
 datanum         byte    %8.0g                 Data set number
 serial          double  %10.0g                Household serial number
@@ -79,7 +79,7 @@ educrec         byte    %23.0g     educreclbl
 empstat         byte    %18.0g     empstatlbl
                                               Employment status [general version]
 incwage         long    %12.0g                Wage and salary income
------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
 Sorted by: 
 
 </code></pre>
@@ -203,41 +203,20 @@ educreclbl:
 
 . tab educrec educyears, mi 
 
-          Educational |                    RECODE of educrec (Educational attainment recode)
-    attainment recode |         0        2.5        6.5          9         10         11         12         14 |     Total
-----------------------+----------------------------------------------------------------------------------------+----------
-    None or preschool |     3,729          0          0          0          0          0          0          0 |     3,729 
-  Grade 1, 2, 3, or 4 |         0      4,034          0          0          0          0          0          0 |     4,034 
-  Grade 5, 6, 7, or 8 |         0          0     22,240          0          0          0          0          0 |    22,240 
-              Grade 9 |         0          0          0     13,029          0          0          0          0 |    13,029 
-             Grade 10 |         0          0          0          0     15,277          0          0          0 |    15,277 
-             Grade 11 |         0          0          0          0          0     21,684          0          0 |    21,684 
-             Grade 12 |         0          0          0          0          0          0    320,379          0 |   320,379 
-1 to 3 years of colle |         0          0          0          0          0          0          0    351,345 |   351,345 
-  4+ years of college |         0          0          0          0          0          0          0          0 |   353,427 
-----------------------+----------------------------------------------------------------------------------------+----------
-                Total |     3,729      4,034     22,240     13,029     15,277     21,684    320,379    351,345 | 1,105,144 
-
-
-                      | RECODE of
-                      |  educrec
-                      | (Education
-                      |     al
-                      | attainment
-          Educational |  recode)
-    attainment recode |        16 |     Total
-----------------------+-----------+----------
-    None or preschool |         0 |     3,729 
-  Grade 1, 2, 3, or 4 |         0 |     4,034 
-  Grade 5, 6, 7, or 8 |         0 |    22,240 
-              Grade 9 |         0 |    13,029 
-             Grade 10 |         0 |    15,277 
-             Grade 11 |         0 |    21,684 
-             Grade 12 |         0 |   320,379 
-1 to 3 years of colle |         0 |   351,345 
-  4+ years of college |   353,427 |   353,427 
-----------------------+-----------+----------
-                Total |   353,427 | 1,105,144 
+          Educational |                         RECODE of educrec (Educational attainment recode)
+    attainment recode |         0        2.5        6.5          9         10         11         12         14         16 |     Total
+----------------------+---------------------------------------------------------------------------------------------------+----------
+    None or preschool |     3,729          0          0          0          0          0          0          0          0 |     3,729 
+  Grade 1, 2, 3, or 4 |         0      4,034          0          0          0          0          0          0          0 |     4,034 
+  Grade 5, 6, 7, or 8 |         0          0     22,240          0          0          0          0          0          0 |    22,240 
+              Grade 9 |         0          0          0     13,029          0          0          0          0          0 |    13,029 
+             Grade 10 |         0          0          0          0     15,277          0          0          0          0 |    15,277 
+             Grade 11 |         0          0          0          0          0     21,684          0          0          0 |    21,684 
+             Grade 12 |         0          0          0          0          0          0    320,379          0          0 |   320,379 
+1 to 3 years of colle |         0          0          0          0          0          0          0    351,345          0 |   351,345 
+  4+ years of college |         0          0          0          0          0          0          0          0    353,427 |   353,427 
+----------------------+---------------------------------------------------------------------------------------------------+----------
+                Total |     3,729      4,034     22,240     13,029     15,277     21,684    320,379    351,345    353,427 | 1,105,144 
 
 . lab var educyears &quot;categ: education in years&quot;
 

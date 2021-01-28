@@ -50,7 +50,7 @@
 	   glob intermedpath	"${gendatapath}Intermediary Datasets${s}"
 	   glob figurespath		"${tablespath}Raw Figures${s}"
 
-	   glob ps1path 		"${syntaxpath}/docs/ps1"
+	   glob ps1path 		"${syntaxpath}docs/ps1/"
 
 *********
 *

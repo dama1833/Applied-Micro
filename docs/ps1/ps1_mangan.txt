@@ -39,7 +39,7 @@ cd "${ps1path}"
 
 Course: ECON 8848  
 Author: Dan Mangan  
-Collaborators: Hannah Denker and Michelle Doughty  
+Collaborators: Hannah Denker, Michelle Doughty, and Rimjhim Saxena  
 Date: <<dd_display: c(current_date)>>
 
 
