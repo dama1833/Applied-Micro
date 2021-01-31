@@ -36,7 +36,7 @@
 	if "${system}"=="local" { 
 		if "${runner}"=="dama1833" {
 			glob drive "/Users/danielmangan/Documents/CU/"
-			glob syntaxpath "/Users/danielmangan/Documents/GitHub/Applied-Micro/"	
+			glob syntaxpath "/Users/danielmangan/Documents/GitHub/Applied-Micro/docs${s}"	
 			glob s "/"
 		}
 		
@@ -50,7 +50,7 @@
 	   glob intermedpath	"${gendatapath}Intermediary Datasets${s}"
 	   glob figurespath		"${tablespath}Raw Figures${s}"
 
-	   glob ps1path 		"${syntaxpath}docs/ps1/"
+	   glob pspath 		"${syntaxpath}docs${s}"
 
 *********
 *

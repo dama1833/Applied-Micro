@@ -31,7 +31,7 @@
 *	2. Open Data
 *
 *******************************
-cd "${ps1path}"
+cd "${pspath}ps1"
 <</dd_remove>>
 
 
