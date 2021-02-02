@@ -224,6 +224,9 @@ hist parity, ///
 
 ## 3c. Compare education distribution for smoking and non-smoking mothers.
 
+Using the following syntax, we can combine two histograms into a single figure and examine differences in the 
+distribution of education levels between smoking and non-smoking mothers. 
+
 ~~~~
 <<dd_do>>
 hist motheduc if smoker==0, ///
@@ -231,7 +234,6 @@ hist motheduc if smoker==0, ///
 	title("Non-Smokers") ///
 	xlab(0(5)20) ///
 	name(hist4, replace) 
-
 hist motheduc if smoker==1, ///
 	normal xtit("Years of Education") ///
 	ytit("") ///
@@ -248,7 +250,18 @@ graph combine hist4 hist5, ///
 
 **What diﬀerences, if any, do you notice in these two distributions?**
 
+Looking at these two histograms, we can see that both distributions appear mostly normal, with the 
+exception of large concentrations of observations around 12 years. This, of course, makes sense 
+since this is the end of high school and is a logical stoppoing point for many people in their educational 
+careers. The distribution for non-smokers is slighlty wider and with a higher mean (13.1 years) than for smokers
+(11.6 years).  
+
+
+
 ## 3d. Scatterplot of birthweight on cigarettes smoked 
+
+Next, we'll make a scatterplot of birthweight in ounces on number of cigarettes smoked per day. We'll also
+include a line of best fit in the plot. 
 
 ~~~~
 <<dd_do>>
@@ -265,6 +278,10 @@ twoway ///
 <<dd_graph: sav("scatter.svg") replace height(400)>>
 
 **Before running any regressions, what do you notice about these data?**
+
+We can see in this plot that most observations are clustered between zero and 20 cigarettes per day on the 
+x axis, with a few at 30 and 40 and a couple of outliers near 50 per day. Our trend line appears to slope 
+slightly downward, suggesting that smoking more cigarettes daily is associated with lower birthweights. 
 
 # 4. Regression Tables
 
