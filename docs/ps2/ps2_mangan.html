@@ -47,6 +47,277 @@ try {
 <p>Course: ECON 8848<br />
 Author: Dan Mangan<br />
 Collaborators: Hannah Denker, Michelle Doughty, and Rimjhim Saxena<br />
-Date: 31 Jan 2021</p>
+Date:  1 Feb 2021</p>
 <nav id="toc"><strong><font size="5">Table of Contents</font></strong></nav>
-<h1><a href="#getting-started" id="getting-started">Getting Started</a></h1>
+<h1><a href="#1-getting-started" id="1-getting-started">1. Getting Started</a></h1>
+<p>First, let&rsquo;s load the data, which contains information on 1388 births. We would like to know whether smoking affects birthweight. After loading the dataset, we will get an overview of what it contains using <code>describe</code> and summarize the variables to view their distributions and check for potential problems. We&rsquo;ll also run a quick check on missingness using the user-written <code>mdescribe</code> command.</p>
+<pre><code>. use &quot;${rawdatapath}birthweight.dta&quot;, clear
+
+. describe
+
+Contains data from /Users/danielmangan/Documents/CU/Applied-Micro/1 Raw Data/birthweight.dta
+  obs:         1,388                          
+ vars:            14                          6 Oct 2008 13:39
+ size:        77,728                          
+-------------------------------------------------------------------------------------------------------------------------------------
+              storage   display    value
+variable name   type    format     label      variable label
+-------------------------------------------------------------------------------------------------------------------------------------
+faminc          float   %9.0g                 1988 family income, $1000s
+cigtax          float   %9.0g                 cig. tax in home state, 1988
+cigprice        float   %9.0g                 cig. price in home state, 1988
+bwght           float   %9.0g                 birth weight, ounces
+fatheduc        float   %9.0g                 father's yrs of educ
+motheduc        float   %9.0g                 mother's yrs of educ
+parity          float   %9.0g                 birth order of child
+male            float   %9.0g                 =1 if male child
+white           float   %9.0g                 =1 if white
+cigs            float   %9.0g                 cigs smked per day while preg
+lbwght          float   %9.0g                 log of bwght
+bwghtlbs        float   %9.0g                 birth weight, pounds
+packs           float   %9.0g                 packs smked per day while preg
+lfaminc         float   %9.0g                 log(faminc)
+-------------------------------------------------------------------------------------------------------------------------------------
+Sorted by: 
+
+. su
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      faminc |      1,388    29.02666    18.73928         .5         65
+      cigtax |      1,388    19.55295    7.795598          2         38
+    cigprice |      1,388     130.559    10.24448      103.8      152.5
+       bwght |      1,388    118.6996    20.35396         23        271
+    fatheduc |      1,192    13.18624    2.745985          1         18
+-------------+---------------------------------------------------------
+    motheduc |      1,387    12.93583    2.376728          2         18
+      parity |      1,388    1.632565    .8940273          1          6
+        male |      1,388    .5208934    .4997433          0          1
+       white |      1,388    .7845821    .4112601          0          1
+        cigs |      1,388    2.087176    5.972688          0         50
+-------------+---------------------------------------------------------
+      lbwght |      1,388    4.760031    .1906622   3.135494   5.602119
+    bwghtlbs |      1,388    7.418723    1.272123     1.4375    16.9375
+       packs |      1,388    .1043588    .2986344          0        2.5
+     lfaminc |      1,388    3.071271    .9180645  -.6931472   4.174387
+
+. mdesc
+
+    Variable    |     Missing          Total     Percent Missing
+----------------+-----------------------------------------------
+         faminc |           0          1,388           0.00
+         cigtax |           0          1,388           0.00
+       cigprice |           0          1,388           0.00
+          bwght |           0          1,388           0.00
+       fatheduc |         196          1,388          14.12
+       motheduc |           1          1,388           0.07
+         parity |           0          1,388           0.00
+           male |           0          1,388           0.00
+          white |           0          1,388           0.00
+           cigs |           0          1,388           0.00
+         lbwght |           0          1,388           0.00
+       bwghtlbs |           0          1,388           0.00
+          packs |           0          1,388           0.00
+        lfaminc |           0          1,388           0.00
+----------------+-----------------------------------------------
+
+</code></pre>
+<p>The summary statistics do not review any abnomalities, and there don&rsquo;t appear to be miscoded missing observations in any of the variables. There is 14% missingness in the <strong>fathereduc</strong> variable, which we&rsquo;ll want to keep in mind. Mothereduc has 1 missing observation.</p>
+<p>Now that we have the variables loaded and gotten to know the data a bit, we can move on to creating macro containing the names of 8 variables from our dataset.</p>
+<pre><code>. glob selectvars &quot;faminc fatheduc motheduc parity male white cigs bwght&quot;
+
+</code></pre>
+<p>Next, we will create a &ldquo;smoker&rdquo; dummy variable equal to 1 if the mother smoked any positive amount of cigarettes and 0 if she smoked none. The <strong>cigs</strong> variable did not have missingness, so we don&rsquo;t have to worry about how to coding missing values in our new variable. We&rsquo;ll also add value and variable lables.</p>
+<pre><code>. recode cigs (0=0) (1/max=1), gen(smoker)
+(209 differences between cigs and smoker)
+
+. lab def smoker_lab 0 &quot;non-smoker&quot; 1 &quot;smoker&quot;
+
+. lab val smoker smoker_lab 
+
+. lab var smoker &quot;dummy: 1=mother smoked one or more cigarette; 0=mother smoked zero cigarettes&quot;
+
+</code></pre>
+<p>Now we want to find the median of <strong>faminc</strong>. To do this, we can retrieve the 50th percentile value from the return list after running the <code>summarize</code> command with the <code>detail</code> option. We can then store the returned value of the median as a local macro if we wish.</p>
+<pre><code>. su faminc, d
+
+                 1988 family income, $1000s
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%           .5             .5
+ 5%          3.5             .5
+10%          6.5             .5       Obs               1,388
+25%         14.5             .5       Sum of Wgt.       1,388
+
+50%         27.5                      Mean           29.02666
+                        Largest       Std. Dev.      18.73928
+75%         37.5             65
+90%           65             65       Variance       351.1608
+95%           65             65       Skewness       .6176205
+99%           65             65       Kurtosis       2.473396
+
+. loc median = `r(p50)'
+
+. di &quot;`median'&quot;
+27.5
+
+</code></pre>
+<p>Finally, using our newly created local macro, we can create a new dummy variable for high income. We will set this variable equal to one for observations with family income at or above the median of 27.5.</p>
+<pre><code>. gen highinc = 0
+
+. replace highinc=1 if faminc &gt;=`median'
+(711 real changes made)
+
+. lab def highinc_lab 0 &quot;family income below median&quot; 1 &quot;family income at or above median&quot;
+
+. lab val highinc highinc_lab
+
+. lab var highinc &quot;dummy: 1=family income at or above median, 0=not&quot;
+
+</code></pre>
+<h1><a href="#2-descriptive-statistics" id="2-descriptive-statistics">2. Descriptive Statistics</a></h1>
+<p>In order to get an overview of certain summary statistics pertaining to the variables selected in our global above, we can use <code>tabstat</code> and then specify which stats we want and that we want them as columns.</p>
+<pre><code>. tabstat $selectvars, s(mean median sd n) c(s) format(%6.0g) 
+
+    variable |      mean       p50        sd         N
+-------------+----------------------------------------
+      faminc |     29.03      27.5     18.74      1388
+    fatheduc |     13.19        12     2.746      1192
+    motheduc |     12.94        12     2.377      1387
+      parity |     1.633         1      .894      1388
+        male |     .5209         1     .4997      1388
+       white |     .7846         1     .4113      1388
+        cigs |     2.087         0     5.973      1388
+       bwght |     118.7       120     20.35      1388
+------------------------------------------------------
+
+</code></pre>
+<h2><a href="#2a-findings-from-descriptive-table" id="2a-findings-from-descriptive-table">2a. Findings from descriptive table</a></h2>
+<p><strong>What do you notice in this table that you might want to report to your reader/audience?</strong></p>
+<p>A couple of things stand out when looking at our summary table. First, we see again here that we have substantial missingness in <strong>fatheduc</strong> and one missing value in <strong>motheduc</strong>. It&rsquo;s also worth noting that our sample is very White (78.4%), which could be an issue if we think the relationship between smoking and birthweight varies by race.</p>
+<h2><a href="#2b-differences-between-smokers-and-non-smokers" id="2b-differences-between-smokers-and-non-smokers">2b. Differences between smokers and non-smokers</a></h2>
+<p><strong>Are there substantial diﬀerences in the characteristics of smokers and smokers?</strong></p>
+<p>Using the option <code>by()</code>, we can separate our table into smokers and non-smokers.</p>
+<pre><code>. tabstat $selectvars, s(mean median sd n) c(s) format(%6.0g) by(smoker) nototal longstub
+
+smoker         variable |      mean       p50        sd         N
+------------------------+----------------------------------------
+non-smoker       faminc |     30.49      27.5     18.96      1176
+               fatheduc |     13.39        13     2.769      1031
+               motheduc |     13.17        12     2.396      1175
+                 parity |     1.616         1     .8954      1176
+                   male |     .5298         1     .4993      1176
+                  white |     .7857         1     .4105      1176
+                   cigs |         0         0         0      1176
+                  bwght |     120.1       121     20.27      1176
+------------------------+----------------------------------------
+smoker           faminc |     20.92      18.5     15.14       212
+               fatheduc |     11.89        12     2.194       161
+               motheduc |     11.64        12     1.775       212
+                 parity |     1.722         1     .8832       212
+                   male |     .4717         0     .5004       212
+                  white |     .7783         1     .4164       212
+                   cigs |     13.67        10     8.691       212
+                  bwght |     111.1       112     19.18       212
+-----------------------------------------------------------------
+
+</code></pre>
+<p>A quick overview of these results tells us that smokers appear, on average, to have lower family income, lower education levels for both parents, and lower birthweights for their children.</p>
+<h2><a href="#2c-evidence-of-a-causal-effect" id="2c-evidence-of-a-causal-effect">2c. Evidence of a causal effect?</a></h2>
+<p><strong>Based on these results, would you feel comfortable calling the raw (unadjusted) diﬀerences in birthweight the “causal eﬀect of smoking”? Why or why not?</strong></p>
+<p>Although average birthweight for the children of smokers appears to be lower than for non-smokers, I would not feel comfortable calling this a causal effect. First, without testing the difference in means we don&rsquo;t know that average smoker and non-smoker birthweights are statistically significantly different. Second, even if they are, there may be bias associated with unobserved or observed variables which, once accounted for, would erase the difference in birthweights between the two groups.</p>
+<h2><a href="#2d-smoker-and-income-crosstab" id="2d-smoker-and-income-crosstab">2d. Smoker and income crosstab</a></h2>
+<p><strong>What would you conclude from a crosstab of the smoker dummy and the high-income dummy?</strong></p>
+<pre><code>. tab smoker highinc, row nof  nol 
+
+    dummy: |
+  1=mother |
+smoked one |
+   or more |
+cigarette; |
+  0=mother |    dummy: 1=family
+    smoked |  income at or above
+      zero |     median, 0=not
+cigarettes |         0          1 |     Total
+-----------+----------------------+----------
+         0 |     45.32      54.68 |    100.00 
+         1 |     67.92      32.08 |    100.00 
+-----------+----------------------+----------
+     Total |     48.78      51.22 |    100.00 
+
+</code></pre>
+<p>We can conclude from this crosstab that high-income observations are less likely to be smokers. 68% of lower-income observations are smokers, whereas only 32% of high-income observations are smokers.</p>
+<h1><a href="#3-graphs" id="3-graphs">3. Graphs</a></h1>
+<h2><a href="#3a-distibution-of-cigarettes-smoked" id="3a-distibution-of-cigarettes-smoked">3a. Distibution of cigarettes smoked</a></h2>
+<p>In order to view the distribution of the number of cigarettes smoked, we will create a histogram of the <strong>cigs</strong> variable.</p>
+<pre><code>. hist cigs, ///
+&gt;         freq normal xtit(&quot;Number of Cigarettes Smoked&quot;) ///
+&gt;         title(&quot;Histogram of Daily Cigarettes Smoked While Pregnant&quot;) ///
+&gt;         saving(&quot;hist1.svg&quot;, replace)
+(bin=31, start=0, width=1.6129032)
+(file hist1.svg saved)
+
+</code></pre>
+<img src="hist1.svg" height="400" >
+<p><strong>What observations do you have for this distribution?</strong></p>
+<p>As we can see, simply creating a histogram for the <strong>cigs</strong> variable creates a rather unhelpful graph since the large number of &ldquo;zeros&rdquo; corresponding to non-smokers makes scale on the y-axis so large that the bins for those who <em>do</em> smoke are barely visible. We will therefore omit non-smoker observations in order to better view the distribution of cigarette consumption among those who do smoke. So that we are sure to be clear about this decision, we will insert a note including the number of omitted observations.</p>
+<pre><code>. hist cigs if cigs!=0, ///
+&gt;         freq normal xtit(&quot;Number of Cigarettes Smoked&quot;) ///
+&gt;         title(&quot;Histogram of Daily Cigarettes Smoked While Pregnant&quot;) ///
+&gt;         note(&quot;Note: Non-smokers omitted from figure (N=1,176)&quot;) ///
+&gt;         saving(&quot;hist2.svg&quot;, replace)
+(bin=14, start=1, width=3.5)
+(file hist2.svg saved)
+
+</code></pre>
+<img src="hist2.svg" height="400" >
+<h2><a href="#3b-distribution-of-parity" id="3b-distribution-of-parity">3b. Distribution of parity</a></h2>
+<pre><code>. hist parity, ///
+&gt;         freq normal xtit(&quot;Birth Order of Child&quot;) ///
+&gt;         title(&quot;Histogram of Child Birth Order&quot;) ///
+&gt;         saving(&quot;hist3.svg&quot;, replace)
+(bin=31, start=1, width=.16129032)
+(file hist3.svg saved)
+
+</code></pre>
+<img src="hist3.svg" height="400" >
+<h2><a href="#3c-compare-education-distribution-for-smoking-and-non-smoking-mothers" id="3c-compare-education-distribution-for-smoking-and-non-smoking-mothers">3c. Compare education distribution for smoking and non-smoking mothers.</a></h2>
+<pre><code>. hist motheduc if smoker==0, ///
+&gt;         normal xtit(&quot;Years of Education&quot;) ///
+&gt;         title(&quot;Non-Smokers&quot;) ///
+&gt;         xlab(0(5)20) ///
+&gt;         name(hist4, replace) 
+(bin=30, start=2, width=.53333333)
+
+. 
+. hist motheduc if smoker==1, ///
+&gt;         normal xtit(&quot;Years of Education&quot;) ///
+&gt;         ytit(&quot;&quot;) ///
+&gt;         xlab(0(5)20) ///
+&gt;         title(&quot;Non-Smokers&quot;) ///
+&gt;         name(hist5, replace) 
+(bin=14, start=6, width=.85714286)
+
+. graph combine hist4 hist5, ///
+&gt;         title(&quot;Histograms of Mother's Education Level&quot;) ///
+&gt;         saving(&quot;hist4.svg&quot;, replace)
+(file hist4.svg saved)
+
+</code></pre>
+<img src="hist4.svg" height="400" >
+<p><strong>What diﬀerences, if any, do you notice in these two distributions?</strong></p>
+<h2><a href="#3d-scatterplot-of-birthweight-on-cigarettes-smoked" id="3d-scatterplot-of-birthweight-on-cigarettes-smoked">3d. Scatterplot of birthweight on cigarettes smoked</a></h2>
+<pre><code>. twoway ///
+&gt;         (scatter bwght cigs) ///
+&gt;         (lfit bwght cigs), ///
+&gt;         xtit(&quot;Cigarettes Smoked per Day&quot;) ytit(&quot;Birthweight in Ounces&quot;) ///
+&gt;         title(&quot;Scatterplot of Birthweight on Daily Cigarettes Smoked&quot;) ///
+&gt;         saving(&quot;scatter.svg&quot;, replace)
+(note: file scatter.svg not found)
+(file scatter.svg saved)
+
+</code></pre>
+<img src="scatter.svg" height="400" >
+<p><strong>Before running any regressions, what do you notice about these data?</strong></p>
+<h1><a href="#4-regression-tables" id="4-regression-tables">4. Regression Tables</a></h1>
+<p><strong>Write a summary of what you would conclude based on this entire table of results.</strong></p>

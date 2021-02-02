@@ -1,12 +1,12 @@
 <<dd_remove>>
 *********************************************************************													
-*	TITLE: 		Problem Set 1
+*	TITLE: 		Problem Set 2
 *	PROJECT:	Applied-Micro 									
 *	PURPOSE:							
 *	AUTHOR:		Mangan		
-*	CREATED:	2020_0120
+*	CREATED:	2020_0201
 *	UPDATED: 	2020_
-*	CALLS UPON:	${rawdatapath}acs2007.dta
+*	CALLS UPON:	${rawdatapath}birthweight.dta
 *	CALLED BY:
 * 	PRODUCES: 							
 *	CONTENTS:
@@ -45,7 +45,293 @@ Date: <<dd_display: c(current_date)>>
 
 <nav id="toc"><strong><font size="5">Table of Contents</font></strong></nav>
 
-# Getting Started
+# 1. Getting Started
+
+First, let's load the data, which contains information on 1388 births. We would like to 
+know whether smoking affects birthweight. After loading the dataset, we will get an overview
+of what it contains using <code>describe</code> and summarize the variables to view their 
+distributions and check for potential problems. We'll also run a quick check on missingness
+using the user-written <code>mdescribe</code> command. 
+
+~~~~
+<<dd_do>>
+use "${rawdatapath}birthweight.dta", clear
+describe
+su
+mdesc
+<</dd_do>>
+~~~~
+
+The summary statistics do not review any abnomalities, and there don't appear to be miscoded
+missing observations in any of the variables. There is 14% missingness in the **fathereduc** variable,
+which we'll want to keep in mind. Mothereduc has 1 missing observation. 
+
+Now that we have the variables loaded and gotten to know the data a bit, 
+we can move on to creating macro containing the names of 8 variables from our dataset. 
+
+~~~~
+<<dd_do>>
+glob selectvars "faminc fatheduc motheduc parity male white cigs bwght"
+<</dd_do>>
+~~~~
+
+Next, we will create a "smoker" dummy variable equal to 1 if the mother smoked any positive
+amount of cigarettes and 0 if she smoked none. The **cigs** variable did not have missingness, 
+so we don't have to worry about how to coding missing values in our new variable. We'll also
+add value and variable lables. 
+
+~~~~
+<<dd_do>> 
+recode cigs (0=0) (1/max=1), gen(smoker)
+lab def smoker_lab 0 "non-smoker" 1 "smoker"
+lab val smoker smoker_lab 
+lab var smoker "dummy: 1=mother smoked one or more cigarette; 0=mother smoked zero cigarettes"
+<</dd_do>>
+~~~~ 
+
+Now we want to find the median of **faminc**. To do this, we can retrieve the 50th percentile 
+value from the return list after running the <code>summarize</code> command with the <code>detail</code> option. 
+We can then store the returned value of the median as a local macro if we wish. 
+
+~~~~
+<<dd_do>>
+su faminc, d
+loc median = `r(p50)'
+di "`median'"
+<</dd_do>>
+~~~~
+
+Finally, using our newly created local macro, we can create a new dummy variable for high income. We will set this variable
+equal to one for observations with family income at or above the median of <<dd_display: `median'  >>. 
+
+~~~~
+<<dd_do>>
+gen highinc = 0
+replace highinc=1 if faminc >=`median'
+lab def highinc_lab 0 "family income below median" 1 "family income at or above median"
+lab val highinc highinc_lab
+lab var highinc "dummy: 1=family income at or above median, 0=not"
+<</dd_do>>
+~~~~
+
+# 2. Descriptive Statistics
+
+In order to get an overview of certain summary statistics pertaining to the variables selected in our global above,
+we can use <code>tabstat</code> and then specify which stats we want and that we want them as columns.
+
+~~~~
+<<dd_do>>
+tabstat $selectvars, s(mean median sd n) c(s) format(%6.0g) 
+<</dd_do>>
+~~~~
+
+## 2a. Findings from descriptive table
+
+**What do you notice in this table that you might want to report to your reader/audience?**
+
+A couple of things stand out when looking at our summary table. First, we see again here that we have substantial missingness
+in **fatheduc** and one missing value in **motheduc**. It's also worth noting that our sample is very White (78.4%), which
+could be an issue if we think the relationship between smoking and birthweight varies by race. 
+
+## 2b. Differences between smokers and non-smokers 
+
+**Are there substantial diﬀerences in the characteristics of smokers and smokers?**
+
+Using the option <code>by()</code>, we can separate our table into smokers and non-smokers. 
+
+~~~~
+<<dd_do>>
+tabstat $selectvars, s(mean median sd n) c(s) format(%6.0g) by(smoker) nototal longstub
+<</dd_do>>
+~~~~
+
+A quick overview of these results tells us that smokers appear, on average, to have lower family income, lower education
+levels for both parents, and lower birthweights for their children.  
+
+## 2c. Evidence of a causal effect? 
+
+**Based on these results, would you feel comfortable calling the raw (unadjusted) diﬀerences in 
+birthweight the “causal eﬀect of smoking”? Why or why not?**
+
+Although average birthweight for the children of smokers appears to be lower than for non-smokers, I would not 
+feel comfortable calling this a causal effect. First, without testing the difference in means we don't know that 
+average smoker and non-smoker birthweights are statistically significantly different. Second, even if they are, there 
+may be bias associated with unobserved or observed variables which, once accounted for, would erase the difference 
+in birthweights between the two groups. 
+
+## 2d. Smoker and income crosstab
+
+**What would you conclude from a crosstab of the smoker dummy and the high-income dummy?**
+
+~~~~
+<<dd_do>>
+tab smoker highinc, row nof  nol 
+<</dd_do>>
+~~~~
+
+We can conclude from this crosstab that high-income observations are less likely to be smokers. 68% of lower-income
+observations are smokers, whereas only 32% of high-income observations are smokers. 
+
+# 3. Graphs
+
+## 3a. Distibution of cigarettes smoked 
+
+In order to view the distribution of the number of cigarettes smoked, we will create a histogram of the **cigs** variable. 
+
+~~~~
+<<dd_do>>
+hist cigs, ///
+	freq normal xtit("Number of Cigarettes Smoked") ///
+	title("Histogram of Daily Cigarettes Smoked While Pregnant") ///
+	saving("hist1.svg", replace)
+<</dd_do>>
+~~~~
+
+<<dd_graph: sav("hist1.svg") replace height(400)>>
+
+**What observations do you have for this distribution?**
+
+As we can see, simply creating a histogram for the **cigs** variable creates a rather unhelpful graph since
+the large number of "zeros" corresponding to non-smokers makes scale on the y-axis so large that the 
+bins for those who *do* smoke are barely visible. We will therefore omit non-smoker observations in order to
+better view the distribution of cigarette consumption among those who do smoke. So that we are sure to be clear about this 
+decision, we will insert a note including the number of omitted observations. 
+
+~~~~
+<<dd_do>>
+hist cigs if cigs!=0, ///
+	freq normal xtit("Number of Cigarettes Smoked") ///
+	title("Histogram of Daily Cigarettes Smoked While Pregnant") ///
+	note("Note: Non-smokers omitted from figure (N=1,176)") ///
+	saving("hist2.svg", replace)
+<</dd_do>>
+~~~~
+
+<<dd_graph: sav("hist2.svg") replace height(400)>>
+
+## 3b. Distribution of parity
+
+~~~~
+<<dd_do>>
+hist parity, ///
+	freq normal xtit("Birth Order of Child") ///
+	title("Histogram of Child Birth Order") ///
+	saving("hist3.svg", replace)
+<</dd_do>>
+~~~~
+
+<<dd_graph: sav("hist3.svg") replace height(400)>>
+
+## 3c. Compare education distribution for smoking and non-smoking mothers.
+
+~~~~
+<<dd_do>>
+hist motheduc if smoker==0, ///
+	normal xtit("Years of Education") ///
+	title("Non-Smokers") ///
+	xlab(0(5)20) ///
+	name(hist4, replace) 
+
+hist motheduc if smoker==1, ///
+	normal xtit("Years of Education") ///
+	ytit("") ///
+	xlab(0(5)20) ///
+	title("Non-Smokers") ///
+	name(hist5, replace) 
+graph combine hist4 hist5, ///
+	title("Histograms of Mother's Education Level") ///
+	saving("hist4.svg", replace)
+<</dd_do>>
+~~~~
+
+<<dd_graph: sav("hist4.svg") replace height(400)>>
+
+**What diﬀerences, if any, do you notice in these two distributions?**
+
+## 3d. Scatterplot of birthweight on cigarettes smoked 
+
+~~~~
+<<dd_do>>
+twoway ///
+	(scatter bwght cigs) ///
+	(lfit bwght cigs), ///
+	xtit("Cigarettes Smoked per Day") ytit("Birthweight in Ounces") ///
+	title("Scatterplot of Birthweight on Daily Cigarettes Smoked") ///
+	legend(off) ///
+	saving("scatter.svg", replace)
+<</dd_do>>
+~~~~
+
+<<dd_graph: sav("scatter.svg") replace height(400)>>
+
+**Before running any regressions, what do you notice about these data?**
+
+# 4. Regression Tables
+
+**Write a summary of what you would conclude based on this entire table of results.**
 
 
-# Descriptive Statistics
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
