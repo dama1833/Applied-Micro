@@ -46,8 +46,7 @@ try {
 <p style="font-weight:800; font-size:42px; color:#4934eb">Problem Set 2</p>
 <p>Course: ECON 8848<br />
 Author: Dan Mangan<br />
-Collaborators: Hannah Denker, Michelle Doughty, and Rimjhim Saxena<br />
-Date:  3 Feb 2021</p>
+Collaborators: Hannah Denker and Michelle Doughty Date:  3 Feb 2021</p>
 <nav id="toc"><strong><font size="5">Table of Contents</font></strong></nav>
 <h1><a href="#1-getting-started" id="1-getting-started">1. Getting Started</a></h1>
 <p>First, let&rsquo;s load the data, which contains information on 1388 births. We would like to know whether smoking affects birthweight. After loading the dataset, we will get an overview of what it contains using <code>describe</code> and summarize the variables to view their distributions and check for potential problems. We&rsquo;ll also run a quick check on missingness using the user-written <code>mdescribe</code> command.</p>
@@ -271,6 +270,7 @@ cigarettes |         0          1 |     Total
 
 </code></pre>
 <img src="hist2.svg" height="400" >
+<p>Here, we see that the distribution of cigarettes smoked is skewed right, with most observatsion grouped between 0 and 20 cigarettes per day and a number of outliers who smoke between 30 and 50 per day. Above 20, observations appear to be grouped at intervals of 10, which suggests that respondents may have rounded to the the nearest &ldquo;half-pack&rdquo; (packs usually contain 20 cigarettes).</p>
 <h2><a href="#3b-distribution-of-parity" id="3b-distribution-of-parity">3b. Distribution of parity</a></h2>
 <pre><code>. hist parity, ///
 &gt;         freq normal xtit(&quot;Birth Order of Child&quot;) ///
@@ -422,5 +422,5 @@ N                            1388            1388            1387
 <li>Our first model shows that a positive difference of one cigarette smoked per day by the mother is associated with decreased birthweight of .514 ounces. This association is statisically significant at $\alpha$ = .001 across all models but decreases slightly in magnitude once we control for gender, race, income, parity, and mother&rsquo;s education.</li>
 <li>Controlling for family income alone (Model 2), we find there to be a significant positive relationship between income and birthweight at $\alpha$ = .01, but this association is no longer significant once we add additional controls. This suggests that family income may not directly be related to birthweight and that the association evident in Model 2 is due to correlations between income and our other control variables.</li>
 <li>In Model 3, we see being male, white, and later in the birth order, are all significant predictors of higher birthweight. However, even after controlling for these variables, the relationship between smoking and birthweight has largely remained unchanged. Family income and education, on the otherhand, do not significantly predict birthweight.</li>
-<li>It is worth noting that even our more saturated third model only accounts for about 5% of the overall variation in birthweight. This points to the existence of omitted variables that may also explain birthweight and supports the general conclusiong that, while the association between smoking and birthweight is certainly of interest, we should probably not use it to make any causal claims.</li>
+<li>It is worth noting that even our more saturated third model only accounts for about 5% of the overall variation in birthweight. This points to the existence of omitted variables that may also explain birthweight and supports the general conclusion that, while the association between smoking and birthweight is certainly of interest, we should probably not use it to make any causal claims.</li>
 </ul>

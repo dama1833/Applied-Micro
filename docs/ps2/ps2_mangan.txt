@@ -209,7 +209,10 @@ hist cigs if cigs!=0, ///
 
 <<dd_graph: sav("hist2.svg") replace height(400)>>
 
-Here, we see that the distribution of 
+Here, we see that the distribution of cigarettes smoked is skewed right, with most observatsion grouped between 0 and 20
+cigarettes per day and a number of outliers who smoke between 30 and 50 per day. Above 20, observations appear to be 
+grouped at intervals of 10, which suggests that respondents may have rounded to the the nearest "half-pack" (packs usually 
+contain 20 cigarettes). 
 
 ## 3b. Distribution of parity
 
