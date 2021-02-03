@@ -177,6 +177,7 @@ observations are smokers, whereas only 32% of high-income observations are smoke
 ## 3a. Distibution of cigarettes smoked 
 
 In order to view the distribution of the number of cigarettes smoked, we will create a histogram of the **cigs** variable. 
+A normal density curve has been overlaid against each of the plots below.  
 
 ~~~~
 <<dd_do>>
