@@ -36,7 +36,7 @@
 	if "${system}"=="local" { 
 		if "${runner}"=="dama1833" {
 			glob drive "/Users/danielmangan/Documents/CU/"
-			glob syntaxpath "/Users/danielmangan/Documents/GitHub/Applied-Micro/docs${s}"	
+			glob syntaxpath "/Users/danielmangan/Documents/GitHub/Applied-Micro/docs/"	
 			glob s "/"
 		}
 		
@@ -68,4 +68,5 @@
 	
 	*run "${syntaxpath}variable_labels_micro.do" // run variable label globals file
 **
+
 

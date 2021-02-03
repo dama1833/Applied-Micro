@@ -47,7 +47,7 @@ try {
 <p>Course: ECON 8848<br />
 Author: Dan Mangan<br />
 Collaborators: Hannah Denker, Michelle Doughty, and Rimjhim Saxena<br />
-Date:  2 Feb 2021</p>
+Date:  3 Feb 2021</p>
 <nav id="toc"><strong><font size="5">Table of Contents</font></strong></nav>
 <h1><a href="#1-getting-started" id="1-getting-started">1. Getting Started</a></h1>
 <p>First, let&rsquo;s load the data, which contains information on 1388 births. We would like to know whether smoking affects birthweight. After loading the dataset, we will get an overview of what it contains using <code>describe</code> and summarize the variables to view their distributions and check for potential problems. We&rsquo;ll also run a quick check on missingness using the user-written <code>mdescribe</code> command.</p>
@@ -282,6 +282,7 @@ cigarettes |         0          1 |     Total
 </code></pre>
 <img src="hist3.svg" height="400" >
 <h2><a href="#3c-compare-education-distribution-for-smoking-and-non-smoking-mothers" id="3c-compare-education-distribution-for-smoking-and-non-smoking-mothers">3c. Compare education distribution for smoking and non-smoking mothers.</a></h2>
+<p>Using the following syntax, we can combine two histograms into a single figure and examine differences in the distribution of education levels between smoking and non-smoking mothers.</p>
 <pre><code>. hist motheduc if smoker==0, ///
 &gt;         normal xtit(&quot;Years of Education&quot;) ///
 &gt;         title(&quot;Non-Smokers&quot;) ///
@@ -289,7 +290,6 @@ cigarettes |         0          1 |     Total
 &gt;         name(hist4, replace) 
 (bin=30, start=2, width=.53333333)
 
-. 
 . hist motheduc if smoker==1, ///
 &gt;         normal xtit(&quot;Years of Education&quot;) ///
 &gt;         ytit(&quot;&quot;) ///
@@ -306,7 +306,9 @@ cigarettes |         0          1 |     Total
 </code></pre>
 <img src="hist4.svg" height="400" >
 <p><strong>What diﬀerences, if any, do you notice in these two distributions?</strong></p>
+<p>Looking at these two histograms, we can see that both distributions appear mostly normal, with the exception of large concentrations of observations around 12 years. This, of course, makes sense since this is the end of high school and is a logical stoppoing point for many people in their educational careers. The distribution for non-smokers is slighlty wider and with a higher mean (13.1 years) than for smokers (11.6 years).</p>
 <h2><a href="#3d-scatterplot-of-birthweight-on-cigarettes-smoked" id="3d-scatterplot-of-birthweight-on-cigarettes-smoked">3d. Scatterplot of birthweight on cigarettes smoked</a></h2>
+<p>Next, we&rsquo;ll make a scatterplot of birthweight in ounces on number of cigarettes smoked per day. We&rsquo;ll also include a line of best fit in the plot.</p>
 <pre><code>. twoway ///
 &gt;         (scatter bwght cigs) ///
 &gt;         (lfit bwght cigs), ///
@@ -319,5 +321,106 @@ cigarettes |         0          1 |     Total
 </code></pre>
 <img src="scatter.svg" height="400" >
 <p><strong>Before running any regressions, what do you notice about these data?</strong></p>
+<p>We can see in this plot that most observations are clustered between zero and 20 cigarettes per day on the x axis, with a few at 30 and 40 and a couple of outliers near 50 per day. Our trend line appears to slope slightly downward, suggesting that smoking more cigarettes daily is associated with lower birthweights.</p>
 <h1><a href="#4-regression-tables" id="4-regression-tables">4. Regression Tables</a></h1>
+<p>We need to run three separate regressions. For the first, we&rsquo;ll regress birthweight in ounces on cigarettes smoker per day. Using the command <code>estimates store</code>, we can store the results of this regression in memory as &ldquo;Mod1&rdquo;. We&rsquo;ll do the same for a second model where we add a control for family income, and a third model with additional controls for parity, male, white, and mother&rsquo;s education. All models will use robust standard errors in order to account for heterscedastic errors in unexplained variation.</p>
+<pre><code>. reg bwght cigs, robust 
+
+Linear regression                               Number of obs     =      1,388
+                                                F(1, 1386)        =      34.29
+                                                Prob &gt; F          =     0.0000
+                                                R-squared         =     0.0227
+                                                Root MSE          =     20.129
+
+------------------------------------------------------------------------------
+             |               Robust
+       bwght |      Coef.   Std. Err.      t    P&gt;|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+        cigs |  -.5137721   .0877334    -5.86   0.000    -.6858767   -.3416675
+       _cons |   119.7719   .5745494   208.46   0.000     118.6448     120.899
+------------------------------------------------------------------------------
+
+. eststo Mod1
+
+. reg bwght cigs faminc, robust
+
+Linear regression                               Number of obs     =      1,388
+                                                F(2, 1385)        =      22.11
+                                                Prob &gt; F          =     0.0000
+                                                R-squared         =     0.0298
+                                                Root MSE          =     20.063
+
+------------------------------------------------------------------------------
+             |               Robust
+       bwght |      Coef.   Std. Err.      t    P&gt;|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+        cigs |  -.4634075   .0887594    -5.22   0.000     -.637525   -.2892901
+      faminc |   .0927647   .0285864     3.25   0.001     .0366875     .148842
+       _cons |   116.9741   1.037207   112.78   0.000     114.9395    119.0088
+------------------------------------------------------------------------------
+
+. eststo Mod2
+
+. reg bwght cigs faminc parity male white motheduc, robust 
+
+Linear regression                               Number of obs     =      1,387
+                                                F(6, 1380)        =      13.68
+                                                Prob &gt; F          =     0.0000
+                                                R-squared         =     0.0526
+                                                Root MSE          =     19.859
+
+------------------------------------------------------------------------------
+             |               Robust
+       bwght |      Coef.   Std. Err.      t    P&gt;|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+        cigs |  -.4864302   .0915172    -5.32   0.000    -.6659582   -.3069023
+      faminc |   .0591903   .0323814     1.83   0.068    -.0043319    .1227125
+      parity |   1.805121   .5998189     3.01   0.003     .6284653    2.981776
+        male |   3.176597   1.064197     2.98   0.003     1.088979    5.264215
+       white |   5.678583    1.43134     3.97   0.000     2.870746     8.48642
+    motheduc |   .0793044   .2372861     0.33   0.738     -.386176    .5447849
+       _cons |    107.921   3.397986    31.76   0.000     101.2552    114.5868
+------------------------------------------------------------------------------
+
+. eststo Mod3
+
+</code></pre>
+<p>Having stored estimates from each model, we can then use <code>estout</code> to construct a table of our regression output.</p>
+<pre><code>. estout Mod1 Mod2 Mod3, ///
+&gt;         cells(b(fmt(%5.3f) star) se(fmt(%5.3f) par)) ///
+&gt;         stats(r2 N, fmt(3 0)) ///
+&gt;         label legend varlabels (cigs &quot;Daily Cigarettes&quot; faminc &quot;Family Income&quot; parity &quot;Parity&quot; male &quot;Male&quot; ///
+&gt;                 white &quot;White&quot; motheduc &quot;Mother's Education&quot; _cons &quot;Constant&quot;)
+
+--------------------------------------------------------------------
+                             Mod1            Mod2            Mod3   
+                             b/se            b/se            b/se   
+--------------------------------------------------------------------
+Daily Cigarettes           -0.514***       -0.463***       -0.486***
+                          (0.088)         (0.089)         (0.092)   
+Family Income                               0.093**         0.059   
+                                          (0.029)         (0.032)   
+Parity                                                      1.805** 
+                                                          (0.600)   
+Male                                                        3.177** 
+                                                          (1.064)   
+White                                                       5.679***
+                                                          (1.431)   
+Mother's Education                                          0.079   
+                                                          (0.237)   
+Constant                  119.772***      116.974***      107.921***
+                          (0.575)         (1.037)         (3.398)   
+--------------------------------------------------------------------
+r2                          0.023           0.030           0.053   
+N                            1388            1388            1387   
+--------------------------------------------------------------------
+* p&lt;0.05, ** p&lt;0.01, *** p&lt;0.001
+
+</code></pre>
 <p><strong>Write a summary of what you would conclude based on this entire table of results.</strong></p>
+<ul>
+<li>Our first model shows that a positive difference of one cigarette smoked per day by the mother is associated with decreased birthweight of .514 ounces. This association is statisically significant at $\alpha$ = .001 across all models but decreases slightly in magnitude once we control for gender, race, income, parity, and mother&rsquo;s education.</li>
+<li>Controlling for family income alone (Model 2), we find there to be a significant positive relationship between income and birthweight at $\alpha$ = .01, but this association is no longer significant once we add additional controls. This suggests that family income may not directly be related to birthweight and that the association evident in Model 2 is due to correlations between income and our other control variables.</li>
+<li>In Model 3, we see being male, white, and later in the birth order, are all significant predictors of higher birthweight. However, even after controlling for these variables, the relationship between smoking and birthweight has largely remained unchanged. Family income and education, on the otherhand, do not significantly predict birthweight.</li>
+<li>It is worth noting that even our more saturated third model only accounts for about 5% of the overall variation in birthweight. This points to the existence of omitted variables that may also explain birthweight and supports the general conclusiong that, while the association between smoking and birthweight is certainly of interest, we should probably not use it to make any causal claims.</li>
+</ul>
