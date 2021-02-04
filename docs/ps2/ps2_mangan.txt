@@ -67,7 +67,7 @@ missing observations in any of the variables. There is 14% missingness in the **
 which we'll want to keep in mind. Mothereduc has 1 missing observation. 
 
 Now that we have the variables loaded and gotten to know the data a bit, 
-we can move on to creating macro containing the names of 8 variables from our dataset. 
+we can move on to creating a global macro containing the names of 8 variables from our dataset. 
 
 ~~~~
 <<dd_do>>

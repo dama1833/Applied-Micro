@@ -46,7 +46,7 @@ try {
 <p style="font-weight:800; font-size:42px; color:#4934eb">Problem Set 2</p>
 <p>Course: ECON 8848<br />
 Author: Dan Mangan<br />
-Collaborators: Hannah Denker and Michelle Doughty Date:  3 Feb 2021</p>
+Collaborators: Hannah Denker and Michelle Doughty Date:  4 Feb 2021</p>
 <nav id="toc"><strong><font size="5">Table of Contents</font></strong></nav>
 <h1><a href="#1-getting-started" id="1-getting-started">1. Getting Started</a></h1>
 <p>First, let&rsquo;s load the data, which contains information on 1388 births. We would like to know whether smoking affects birthweight. After loading the dataset, we will get an overview of what it contains using <code>describe</code> and summarize the variables to view their distributions and check for potential problems. We&rsquo;ll also run a quick check on missingness using the user-written <code>mdescribe</code> command.</p>
@@ -54,14 +54,14 @@ Collaborators: Hannah Denker and Michelle Doughty Date:  3 Feb 2021</p>
 
 . describe
 
-Contains data from /Users/danielmangan/Documents/CU/Applied-Micro/1 Raw Data/birthweight.dta
+Contains data from /Users/danielmangan/Library/Mobile Documents/com~apple~CloudDocs/Documents/CU/Applied-Micro/1 Raw Data/birthweight.dta
   obs:         1,388                          
  vars:            14                          6 Oct 2008 13:39
  size:        77,728                          
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------
               storage   display    value
 variable name   type    format     label      variable label
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------
 faminc          float   %9.0g                 1988 family income, $1000s
 cigtax          float   %9.0g                 cig. tax in home state, 1988
 cigprice        float   %9.0g                 cig. price in home state, 1988
@@ -76,7 +76,7 @@ lbwght          float   %9.0g                 log of bwght
 bwghtlbs        float   %9.0g                 birth weight, pounds
 packs           float   %9.0g                 packs smked per day while preg
 lfaminc         float   %9.0g                 log(faminc)
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------
 Sorted by: 
 
 . su
@@ -122,7 +122,7 @@ Sorted by:
 
 </code></pre>
 <p>The summary statistics do not review any abnomalities, and there don&rsquo;t appear to be miscoded missing observations in any of the variables. There is 14% missingness in the <strong>fathereduc</strong> variable, which we&rsquo;ll want to keep in mind. Mothereduc has 1 missing observation.</p>
-<p>Now that we have the variables loaded and gotten to know the data a bit, we can move on to creating macro containing the names of 8 variables from our dataset.</p>
+<p>Now that we have the variables loaded and gotten to know the data a bit, we can move on to creating a global macro containing the names of 8 variables from our dataset.</p>
 <pre><code>. glob selectvars &quot;faminc fatheduc motheduc parity male white cigs bwght&quot;
 
 </code></pre>

@@ -50,7 +50,7 @@
 	   glob intermedpath	"${gendatapath}Intermediary Datasets${s}"
 	   glob figurespath		"${tablespath}Raw Figures${s}"
 
-	   glob pspath 		"${syntaxpath}ps2${s}"
+	   glob pspath 		"${syntaxpath}"
 
 *********
 *
@@ -66,7 +66,7 @@
 *
 *********
 	
-	*run "${syntaxpath}variable_labels_micro.do" // run variable label globals file
+	*run "${syntaxpath}variable_labels_mi
 **
 
 
