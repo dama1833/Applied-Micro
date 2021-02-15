@@ -35,7 +35,7 @@
 
 	if "${system}"=="local" { 
 		if "${runner}"=="dama1833" {
-			glob drive "/Users/danielmangan/Documents/CU/"
+			glob drive "/Users/danielmangan/Library/Mobile Documents/com~apple~CloudDocs/Documents/CU/"
 			glob syntaxpath "/Users/danielmangan/Documents/GitHub/Applied-Micro/docs/"	
 			glob s "/"
 		}
@@ -68,5 +68,3 @@
 	
 	*run "${syntaxpath}variable_labels_mi
 **
-
-

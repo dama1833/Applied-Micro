@@ -1,0 +1,45 @@
+<<dd_remove>>
+*********************************************************************													
+*	TITLE: 		Problem Set 3
+*	PROJECT:	Applied-Micro 									
+*	PURPOSE:							
+*	AUTHOR:		Mangan		
+*	CREATED:	2020_0214
+*	UPDATED: 	2020_
+*	CALLS UPON:	
+*	CALLED BY:
+* 	PRODUCES: 							
+*	CONTENTS:
+*		0. Markdown settigns
+*********************************************************************
+<</dd_remove>>
+
+<<dd_remove>>
+*******************************
+*
+*	0. Markdown Settings
+*
+*******************************
+<</dd_remove>>
+<<dd_version: 1>>
+<<dd_include: header.txt>>
+
+<<dd_remove>>
+*******************************
+*
+*	1. 
+*
+*******************************
+cd "${pspath}ps3"
+<</dd_remove>>
+
+
+<p style="font-weight:800; font-size:42px; color:#4934eb">Problem Set 3</p>
+
+Course: ECON 8848  
+Author: Dan Mangan  
+Collaborators:   
+Date: <<dd_display: c(current_date)>>
+
+
+<nav id="toc"><strong><font size="5">Table of Contents</font></strong></nav>

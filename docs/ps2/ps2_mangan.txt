@@ -131,7 +131,7 @@ tabstat $selectvars, s(mean median sd n) c(s) format(%6.0g)
 
 A couple of things stand out when looking at our summary table. First, we see again here that we have substantial missingness
 in **fatheduc** and one missing value in **motheduc**. It's also worth noting that our sample is very White (78.4%), which
-could be an issue if we think the relationship between smoking and birthweight varies by race. 
+could be an issue given the relatively small size of this dataset if we think the relationship between smoking and birthweight varies by race. 
 
 ## 2b. Differences between smokers and non-smokers 
 
