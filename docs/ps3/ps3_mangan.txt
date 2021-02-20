@@ -10,14 +10,27 @@
 *	CALLED BY:
 * 	PRODUCES: 							
 *	CONTENTS:
-*		0. Markdown settigns
+*		0.0 Markdown settigns
+*		0.1 Pset Setup and TOC
+*		1. Drawing from Various Distributions
+*			1.1 Independent draws
+*			1.2 Joint Distribution
+*		2. The World Series
+*			2.1 The program
+*			2.2 Simulation
+*		3. Regression Analysis
+*			3.1 The DGP
+*			3.2 Monte Carlo
+*		4. Heteroskedasticity and Robust Standard Errors
+*			4.1 The DGP 
+*			4.2 Monte Carlo
 *********************************************************************
 <</dd_remove>>
 
 <<dd_remove>>
 *******************************
 *
-*	0. Markdown Settings
+*	0.0 Markdown Settings
 *
 *******************************
 <</dd_remove>>
@@ -27,7 +40,7 @@
 <<dd_remove>>
 *******************************
 *
-*	1. 
+*	0.1. Pset Setup and TOC
 *
 *******************************
 cd "${pspath}ps3"
@@ -38,8 +51,350 @@ cd "${pspath}ps3"
 
 Course: ECON 8848  
 Author: Dan Mangan  
-Collaborators:   
+Collaborators:  
 Date: <<dd_display: c(current_date)>>
 
 
 <nav id="toc"><strong><font size="5">Table of Contents</font></strong></nav>
+
+<<dd_remove>>
+*******************************
+*
+*	1. Drawing from Various Distributions
+*
+*******************************
+<</dd_remove>>
+
+
+
+# 1. Drawing from Various Distributions 
+
+After setting our observations to 10,000, we will first draw from a uniform distribution. We'll 
+also set a seed so that we can reproduce our results.  
+
+~~~~
+<<dd_do>>
+drop _all 
+set obs 10000 
+set seed 12345
+<</dd_do>>
+~~~~
+
+
+## 1.1 Independent draws 
+
+Our first draw will be from a uniform distribution on [4,6]. A histogram provides visual verification of the draw. 
+
+~~~~
+<<dd_do>>
+gen x1 = runiform(4,6)
+hist x1, ///
+	xtit("Uniform Distribution on [4,6]") ///
+	saving(histx1, replace)
+<</dd_do>>
+~~~~
+
+<<dd_graph: sav("histx1.svg") replace height(300)>>
+
+Next, we draw from a normal distriution with a mean of 3 and variance of 4. 
+
+~~~~
+<<dd_do>>
+gen x2 = rnormal()*2+3
+hist x2, ///
+	normal xtit("Normal Distribution, {&mu} = 3; {&sigma}{superscript:2} = 4") ///
+	saving(histx2, replace)
+<</dd_do>>
+~~~~
+
+<<dd_graph: sav("histx2.svg") replace height(300)>>
+
+And finally a truncated normal distribution with mean = 0, variance = 9, and only positive values observed. 
+
+~~~~
+<<dd_do>>
+gen x3 = invnorm(runiform(.5,1))*3
+histogram x3, ///
+	xtit("Normal Distribution, {&mu} = 0; {&sigma}{superscript:2} = 9") ///
+	saving(histx3, replace)
+<</dd_do>>
+~~~~
+
+<<dd_graph: sav("histx3.svg") replace height(300)>>
+
+## 1.2 Joint Distribution 
+
+With observations set to 1,000, we now draw from a biviarate normal joint distribution with the following parameters:  
+- $\mu_1$ = 0; $\mu_2$ = 0  
+- $\sigma_1$ = 1; $\sigma_2$ = 2   
+- $\rho$ = 0.6  
+
+Note that, for the variance-covariance matrix created in the code below, we need to convert the correlation value of 
+0.6 to covariance using the following formula: $$\rho_{xy}=\frac{\sigma_{xy}}{\sigma_x\sigma_y}$$
+
+~~~~
+<<dd_do>>
+set seed 12345
+clear
+set obs 1000
+matrix mu = (0,0) 
+matrix sigma = (1,1.2 \ 1.2, 4) 
+drawnorm x1 x2, mean(mu) cov(sigma) 
+scatter x1 x2, ///
+	saving(scat1, replace)
+<</dd_do>>
+~~~~
+
+<<dd_graph: sav("scat1.svg") replace height(300)>>
+
+<<dd_remove>>
+*******************************
+*
+*	2. The World Series
+*
+*******************************
+<</dd_remove>>
+
+# 2. The World Series 
+
+Next, we will create an rclass program that simulates the binary outcome of a championship series 
+with a given number of games and win probability for the better team. 
+
+##2.1 The program 
+
+~~~~
+<<dd_do>>
+cap program drop worldseries 
+program define worldseries, rclass 
+syntax[, n(integer 7) p(real 0.6)] 
+drop _all 
+set obs `n' 
+gen games = rbinomial(1,`p') 
+qui su games
+return scalar win_per = `r(mean)'
+return scalar win_all = (`r(mean)'>.5) 
+end 
+<</dd_do>>
+~~~~
+
+## 2.2 Simulation
+
+Let's imagine an argument where one party claims that adding games to the World Series increases the 
+probability that the better team will win and another aruges that this increase in probability is small, so the real 
+reason must be to increase revenue for the league. 
+
+If we simulate 1,000 World Series with the probability of the stronger team winning set at 0.6, we can observe 
+how often the that team will win the overall series in a best of 3, best of 5, and best of 7 scenario. 
+
+~~~~
+<<dd_do>>
+forvalues g = 3(2)7 {
+	simulate ws_wins = r(win_all), ///
+		nodots reps(1000) seed(12345) : worldseries, n(`g') p(.6) 
+	qui su ws_wins
+	loc winper_`g'games : di %3.1f (`r(mean)'*100)
+}
+<</dd_do>>
+~~~~
+
+The results of our simulation (with p set to 0.6) are as follows:  
+- In a 3 game series, the "better" team will win <<dd_display: `winper_3games'>>% of the time.   
+- In a 5 game series, the "better" team will win <<dd_display: `winper_5games'>>% of the time.   
+- In a 7 game series, the "better" team will win <<dd_display: `winper_7games'>>% of the time.   
+
+We'll compare these results to what would happen if the "better" team were to win each game 80% of the time 
+(p = 0.8). 
+
+~~~~
+<<dd_do>>
+forvalues g = 3(2)7 {
+	simulate ws_wins = r(win_all), ///
+		nodots reps(1000) seed(12345) : worldseries, n(`g') p(.8) 
+	qui su ws_wins
+	loc winper_`g'games : di %3.1f (`r(mean)'*100)
+}
+<</dd_do>>
+~~~~
+
+The results of our simulation with p increased to 0.8 are as follows:  
+- In a 3 game series, the "better" team will win <<dd_display: `winper_3games'>>% of the time.   
+- In a 5 game series, the "better" team will win <<dd_display: `winper_5games'>>% of the time.   
+- In a 7 game series, the "better" team will win <<dd_display: `winper_7games'>>% of the time. 
+
+**What would you say to the two sides in the argument?**
+
+In both simulations, increasing the number of games does improve the chances of the "better" team winning
+the World Series. This makes sense of course, as the law of large numbers tells us that the results from a large
+number of trials will approach true polulation parameter which, in our case, means that the better team wins. 
+As for the argument, it's hard to say whether this increase 
+(about 4 percentage points when p = .6 and 6 points when p = .8) is enough to believe that the league is 
+primarily interested in revenue or in the better team winning the series. One could make the case that 
+an increase of 6 percentage points is substantial given the importance of the World Series. But someone who 
+cares little about sports might see this differently. So, I think I would say to both sides in this argument that
+they should just go get another beer and enjoy the game. 
+
+<<dd_remove>>
+*******************************
+*
+*	3. Regression Analysis
+*
+*******************************
+<</dd_remove>>
+
+# 3. Regression Analysis 
+
+In this section, we will evaluate the properties of standard OLS regression under its ideal conditions. 
+
+## 3.1 The DGP 
+
+In order to run out simulations, we need to create a program to generate data with the following characteristics:  
+- $x \sim U\(0,10)$   
+- $\epsilon \sim N\(0,1)$  
+- $y_i = \beta x_i + \epsilon_i$
+
+~~~~
+<<dd_do>>
+cap program drop dgp1 
+program define dgp1, rclass 
+syntax[, n(integer 30) beta(real 1)]
+drop _all 
+set obs `n'
+gen x = runiform(0,10)
+gen e = rnormal()
+gen y = `beta'*x + e 
+reg y x 
+return scalar betahat = _b[x]
+return scalar se = _se[x]
+end 
+<</dd_do>>
+~~~~
+
+## 3.2 Monte Carlo
+
+Having created our data generating program, we will call it within a Monte Carlo simulation using 
+sample size of 30 and $\beta$ = 1. This simulation will iterate 1000 times. 
+
+~~~~
+<<dd_do>>
+simulate betahat=r(betahat) se=r(se), nodots reps(1000) seed(12345) : dgp1
+qui su betahat 
+loc bhat1 : di %9.3f `r(mean)'
+loc sdbhat : di %9.3f `r(sd)'
+qui su se 
+loc se1 : di %9.3f `r(mean)'
+<</dd_do>>
+~~~~
+
+**Is the average $\hat{\beta}$ near the true value?**
+
+The average value of $\hat{\beta}$ is <<dd_display: `bhat1'>>, which is close to the true value of 1.  
+
+**Is the average standard error close to the true standard deviation of $\hat{\beta}$?**
+
+The average standard error is <<dd_display: `se1'>>, which is close to the true value $\sigma_{\hat{\beta}} =$ <<dd_display: `sdbhat'>>.
+
+Next, we will generate a t-statistic using $$t = \frac{\hat{\beta} - \beta}{\hat{\sigma}}$$
+
+~~~~
+<<dd_do>>
+gen t = (betahat-1)/se 
+<</dd_do>>
+~~~~
+
+**If you used a critical value of |1.96|, what percent of the time would you reject this null hypothesis, 
+even though it is true?**
+
+We would reject the null-hypothesis, $H_0:\hat{\beta}=\beta$, whenever $t \ge |1.96|$. This should
+occur approximately 5% of the time. We can check this as follows:
+
+~~~~
+<<dd_do>>
+gen reject = abs(t)>=1.96
+su reject 
+<</dd_do>>
+~~~~
+
+The mean of our reject variable indicates that we would reject the null 5.3% of this time in our 
+simulation, which is close to what we should expect. 
+
+Next, we will run another Monte Carlo but change the sample size to 100. 
+
+~~~~
+<<dd_do>>
+simulate betahat=r(betahat) se=r(se), nodots reps(1000) seed(12345) : dgp1, n(100)
+su
+<</dd_do>>
+~~~~
+
+**Compare this distribution with the distribution with a sample size of 30.**
+
+We can see from the summary table printed above that increasing the sample size to 100 results in an 
+average $\hat{\beta}$ that is even closer to the true value of 1 and a much smaller standard error. This 
+is to be expected, as the standard error is proportional to the inverse of the square root of the sample size. 
+
+<<dd_remove>>
+*******************************
+*
+*	4. Heteroskedasticity and Robust Standard Errors
+*
+*******************************
+<</dd_remove>>
+
+# 4. Heteroskedasticity and Robust Standard Errors
+
+In order to examine the important of using heteroskedasticity-robust standard errors, we will create a new program to  
+generate data with the following characteristics:  
+
+- $x \sim U\(0,10)$   
+- $\epsilon \sim N\(0,1)$  
+- $\nu \sim N\(0,1)$  
+- $y_i = \beta x_i + \epsilon_i + \lambda v_i \nu_i$
+
+## 4.1 The DGP 
+
+~~~~
+<<dd_do>>
+ program define dgp2, rclass 
+ syntax[, n(integer 250) beta(real 1) lambda(real 0)] 
+ drop _all 
+ set obs `n' 
+ gen x = runiform(0, 10)
+ gen e = rnormal()
+ gen v = rnormal()
+ gen y = `beta'*x + e + `lambda'*v*x
+ reg y x 
+ return scalar betahat_reg = _b[x]
+ return scalar se_reg = _se[x]
+ reg y x, robust
+ return scalar betahat_rob = _b[x]
+ return scalar se_rob = _se[x]
+ end
+<</dd_do>>
+~~~~
+
+## 4.2 Monte Carlo
+
+Our first simulation will be over 1000 iterations with $\beta=1$, $\n=250$, and $\lambda=0. 
+
+~~~~
+<<dd_do>>
+simulate ///
+	betahat_reg=r(betahat_reg) ///
+	se_reg=r(se_reg) ///
+	betahat_rob=r(betahat_rob) ///
+	se_rob=r(se_rob), ///
+	nodots reps(1000) seed(12345) : dgp2
+su
+<</dd_do>>
+~~~~
+
+**Is there a substantial difference between the two estimates of the standard errors?**
+
+**Do you get similar rejection rates with a critical value of |1.96|?**
+
+**Is there a substantial difference between the two estimates of the standard errors? 
+If so, which one is closer, on average, to the tue standard deviation of beta-hat?** 
+
+**Do you get similar rejection rates with a critical value of |1.96|?**
+
+**Will you ever run a regression with classical standard errors again?**

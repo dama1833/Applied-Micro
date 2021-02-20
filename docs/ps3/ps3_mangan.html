@@ -43,7 +43,241 @@ try {
 }
 </script>
 </head>
-<p style="font-weight:800; font-size:42px; color:#4934eb">Problem Set 2</p>
+<p style="font-weight:800; font-size:42px; color:#4934eb">Problem Set 3</p>
 <p>Course: ECON 8848<br />
 Author: Dan Mangan<br />
-Collaborators: Date: 14 Feb 2021</p>
+Collaborators:<br />
+Date: 19 Feb 2021</p>
+<nav id="toc"><strong><font size="5">Table of Contents</font></strong></nav>
+<h1><a href="#1-drawing-from-various-distributions" id="1-drawing-from-various-distributions">1. Drawing from Various Distributions</a></h1>
+<p>After setting our observations to 10,000, we will first draw from a uniform distribution. We&rsquo;ll also set a seed so that we can reproduce our results.</p>
+<pre><code>. drop _all 
+
+. set obs 10000 
+number of observations (_N) was 0, now 10,000
+
+. set seed 12345
+
+</code></pre>
+<h2><a href="#11-independent-draws" id="11-independent-draws">1.1 Independent draws</a></h2>
+<p>Our first draw will be from a uniform distribution on [4,6]. A histogram provides visual verification of the draw.</p>
+<pre><code>. gen x1 = runiform(4,6)
+
+. hist x1, ///
+&gt;         xtit(&quot;Uniform Distribution on [4,6]&quot;) ///
+&gt;         saving(histx1, replace)
+(bin=40, start=4.0001974, width=.04997746)
+(file histx1.gph saved)
+
+</code></pre>
+<img src="histx1.svg" height="300" >
+<p>Next, we draw from a normal distriution with a mean of 3 and variance of 4.</p>
+<pre><code>. gen x2 = rnormal()*2+3
+
+. hist x2, ///
+&gt;         normal xtit(&quot;Normal Distribution, {&amp;mu} = 3; {&amp;sigma}{superscript:2} = 4&quot;) ///
+&gt;         saving(histx2, replace)
+(bin=40, start=-5.3920631, width=.41438775)
+(file histx2.gph saved)
+
+</code></pre>
+<img src="histx2.svg" height="300" >
+<p>And finally a truncated normal distribution with mean = 0, variance = 9, and only positive values observed.</p>
+<pre><code>. gen x3 = invnorm(runiform(.5,1))*3
+
+. histogram x3, ///
+&gt;         xtit(&quot;Normal Distribution, {&amp;mu} = 0; {&amp;sigma}{superscript:2} = 9&quot;) ///
+&gt;         saving(histx3, replace)
+(bin=40, start=.00013556, width=.31707701)
+(file histx3.gph saved)
+
+</code></pre>
+<img src="histx3.svg" height="300" >
+<h2><a href="#12-joint-distribution" id="12-joint-distribution">1.2 Joint Distribution</a></h2>
+<p>With observations set to 1,000, we now draw from a biviarate normal joint distribution with the following parameters:<br />
+- $\mu_1$ = 0; $\mu_2$ = 0<br />
+- $\sigma_1$ = 1; $\sigma_2$ = 2<br />
+- $\rho$ = 0.6</p>
+<p>Note that, for the variance-covariance matrix created in the code below, we need to convert the correlation value of 0.6 to covariance using the following formula: $$\rho_{xy}=\frac{\sigma_{xy}}{\sigma_x\sigma_y}$$</p>
+<pre><code>. set seed 12345
+
+. clear
+
+. set obs 1000
+number of observations (_N) was 0, now 1,000
+
+. matrix mu = (0,0) 
+
+. matrix sigma = (1,1.2 \ 1.2, 4) 
+
+. drawnorm x1 x2, mean(mu) cov(sigma) 
+
+. scatter x1 x2, ///
+&gt;         saving(scat1, replace)
+(file scat1.gph saved)
+
+</code></pre>
+<img src="scat1.svg" height="300" >
+<h1><a href="#2-the-world-series" id="2-the-world-series">2. The World Series</a></h1>
+<p>Next, we will create an rclass program that simulates the binary outcome of a championship series with a given number of games and win probability for the better team.</p>
+<h2><a href="#21-the-program" id="21-the-program">2.1 The program</a></h2>
+<pre><code>. cap program drop worldseries 
+
+. program define worldseries, rclass 
+  1. syntax[, n(integer 7) p(real 0.6)] 
+  2. drop _all 
+  3. set obs `n' 
+  4. gen games = rbinomial(1,`p') 
+  5. qui su games
+  6. return scalar win_per = `r(mean)'
+  7. return scalar win_all = (`r(mean)'&gt;.5) 
+  8. end 
+
+</code></pre>
+<h2><a href="#22-simulation" id="22-simulation">2.2 Simulation</a></h2>
+<p>Let&rsquo;s imagine an argument where one party claims that adding games to the World Series increases the probability that the better team will win and another aruges that this increase in probability is small, so the real reason must be to increase revenue for the league.</p>
+<p>If we simulate 1,000 World Series with the probability of the stronger team winning set at 0.6, we can observe how often the that team will win the overall series in a best of 3, best of 5, and best of 7 scenario.</p>
+<pre><code>. forvalues g = 3(2)7 {
+  2.         simulate ws_wins = r(win_all), ///
+&gt;                 nodots reps(1000) seed(12345) : worldseries, n(`g') p(.6) 
+  3.         qui su ws_wins
+  4.         loc winper_`g'games : di %3.1f (`r(mean)'*100)
+  5. }
+
+      command:  worldseries, n(3) p(.6)
+      ws_wins:  r(win_all)
+
+
+      command:  worldseries, n(5) p(.6)
+      ws_wins:  r(win_all)
+
+
+      command:  worldseries, n(7) p(.6)
+      ws_wins:  r(win_all)
+
+
+</code></pre>
+<p>The results of our simulation (with p set to 0.6) are as follows:<br />
+- In a 3 game series, the &ldquo;better&rdquo; team will win 67.6% of the time.<br />
+- In a 5 game series, the &ldquo;better&rdquo; team will win 68.8% of the time.<br />
+- In a 7 game series, the &ldquo;better&rdquo; team will win 71.4% of the time.</p>
+<p>We&rsquo;ll compare these results to what would happen if the &ldquo;better&rdquo; team were to win each game 80% of the time (p = 0.8).</p>
+<pre><code>. forvalues g = 3(2)7 {
+  2.         simulate ws_wins = r(win_all), ///
+&gt;                 nodots reps(1000) seed(12345) : worldseries, n(`g') p(.8) 
+  3.         qui su ws_wins
+  4.         loc winper_`g'games : di %3.1f (`r(mean)'*100)
+  5. }
+
+      command:  worldseries, n(3) p(.8)
+      ws_wins:  r(win_all)
+
+
+      command:  worldseries, n(5) p(.8)
+      ws_wins:  r(win_all)
+
+
+      command:  worldseries, n(7) p(.8)
+      ws_wins:  r(win_all)
+
+
+</code></pre>
+<p>The results of our simulation with p increased to 0.8 are as follows:<br />
+- In a 3 game series, the &ldquo;better&rdquo; team will win 90.4% of the time.<br />
+- In a 5 game series, the &ldquo;better&rdquo; team will win 94.5% of the time.<br />
+- In a 7 game series, the &ldquo;better&rdquo; team will win 96.3% of the time.</p>
+<p><strong>What would you say to the two sides in the argument?</strong></p>
+<p>In both simulations, increasing the number of games does improve the chances of the &ldquo;better&rdquo; team winning the World Series. This makes sense of course, as the law of large numbers tells us that the results from a large number of trials will approach true polulation parameter which, in our case, means that the better team wins. As for the argument, it&rsquo;s hard to say whether this increase (about 4 percentage points when p = .6 and 6 points when p = .8) is enough to believe that the league is primarily interested in revenue or in the better team winning the series. One could make the case that an increase of 6 percentage points is substantial given the importance of the World Series. But someone who cares little about sports might see this differently. So, I think I would say to both sides in this argument that they should just go get another beer and enjoy the game.</p>
+<h1><a href="#3-regression-analysis" id="3-regression-analysis">3. Regression Analysis</a></h1>
+<p>In this section, we will evaluate the properties of standard OLS regression under its ideal conditions.</p>
+<h2><a href="#31-the-dgp" id="31-the-dgp">3.1 The DGP</a></h2>
+<p>In order to run out simulations, we need to create a program to generate data with the following characteristics:<br />
+- $x \sim U(0,10)$<br />
+- $\epsilon \sim N(0,1)$<br />
+- $y_i = \beta x_i + \epsilon_i$</p>
+<pre><code>. cap program drop dgp1 
+
+. program define dgp1, rclass 
+  1. syntax[, n(integer 30) beta(real 1)]
+  2. drop _all 
+  3. set obs `n'
+  4. gen x = runiform(0,10)
+  5. gen e = rnormal()
+  6. gen y = `beta'*x + e 
+  7. reg y x 
+  8. return scalar betahat = _b[x]
+  9. return scalar se = _se[x]
+ 10. end 
+
+</code></pre>
+<h2><a href="#32-monte-carlo" id="32-monte-carlo">3.2 Monte Carlo</a></h2>
+<p>Having created our data generating program, we will call it within a Monte Carlo simulation using sample size of 30 and $\beta$ = 1. This simulation will iterate 1000 times.</p>
+<pre><code>. simulate betahat=r(betahat) se=r(se), nodots reps(1000) seed(12345) : dgp1
+
+      command:  dgp1
+      betahat:  r(betahat)
+           se:  r(se)
+
+
+. qui su betahat 
+
+. loc bhat1 : di %9.3f `r(mean)'
+
+. loc sdbhat : di %9.3f `r(sd)'
+
+. qui su se 
+
+. loc se1 : di %9.3f `r(mean)'
+
+</code></pre>
+<p><strong>Is the average $\hat{\beta}$ near the true value?</strong></p>
+<p>The average value of $\hat{\beta}$ is .998, which is close to the true value of 1.</p>
+<p><strong>Is the average standard error close to the true standard deviation of $\hat{\beta}$?</strong></p>
+<p>The average standard error is .065, which is close to the true value $\sigma_{\hat{\beta}} =$ .063.</p>
+<p>Next, we will generate a t-statistic using $$t = \frac{\hat{\beta} - \beta}{\hat{\sigma}}$$</p>
+<pre><code>. gen t = (betahat-1)/se 
+
+</code></pre>
+<p><strong>If you used a critical value of |1.96|, what percent of the time would you reject this null hypothesis, even though it is true?</strong></p>
+<p>We would reject the null-hypothesis, $H_0:\hat{\beta}=\beta$, whenever $t \ge |1.96|$. This should occur approximately 5% of the time. We can check this as follows:</p>
+<pre><code>. gen reject = abs(t)&gt;=1.96
+
+. su reject 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      reject |      1,000        .053    .2241456          0          1
+
+</code></pre>
+<p>The mean of our reject variable indicates that we would reject the null 5.3% of this time in our simulation, which is close to what we should expect.</p>
+<p>Next, we will run another Monte Carlo but change the sample size to 100.</p>
+<pre><code>. simulate betahat=r(betahat) se=r(se), nodots reps(1000) seed(12345) : dgp1, n(100)
+
+      command:  dgp1, n(100)
+      betahat:  r(betahat)
+           se:  r(se)
+
+
+. su
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     betahat |      1,000    .9974975    .0353781   .8928249   1.119232
+          se |      1,000     .034909    .0029874   .0260036   .0452149
+
+</code></pre>
+<p><strong>Compare this distribution with the distribution with a sample size of 30.</strong></p>
+<p>We can see from the summary table printed above that increasing the sample size to 100 results in an average $\hat{\beta}$ that is even closer to the true value of 1 and a much smaller standard error. This is to be expected, as the standard error is proportional to the inverse of the square root of the sample size.</p>
+<h1><a href="#4-heteroskedasticity-and-robust-standard-errors" id="4-heteroskedasticity-and-robust-standard-errors">4. Heteroskedasticity and Robust Standard Errors</a></h1>
+<p>In order to examine the important of using Heteroskedasticity-robust standard errors, we will create a new program to<br />
+generate data with the following characteristics:<br />
+- $x \sim U(0,10)$<br />
+- $\epsilon \sim N(0,1)$<br />
+- $\nu \sim N(0,1)$<br />
+- $y_i = \beta x_i + \epsilon_i + \lambda v_i \nu_i$</p>
+<h2><a href="#41-the-dgp" id="41-the-dgp">4.1 The DGP</a></h2>
+<h2><a href="#42-monte-carlo" id="42-monte-carlo">4.2 Monte Carlo</a></h2>
+<p><strong>Is there a substantial difference between the two estimates of the standard errors?</strong></p>
+<p><strong>Do you get similar rejection rates with a critical value of |1.96|?</strong></p>
+<p><strong>Is there a substantial difference between the two estimates of the standard errors? If so, which one is closer, on average, to the tue standard deviation of beta-hat?</strong></p>
+<p><strong>Do you get similar rejection rates with a critical value of |1.96|?</strong></p>
