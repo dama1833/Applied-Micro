@@ -46,8 +46,7 @@ try {
 <p style="font-weight:800; font-size:42px; color:#4934eb">Problem Set 3</p>
 <p>Course: ECON 8848<br />
 Author: Dan Mangan<br />
-Collaborators:<br />
-Date: 19 Feb 2021</p>
+Collaborators: Michelle Doughty and Hannah Denker Date: 20 Feb 2021</p>
 <nav id="toc"><strong><font size="5">Table of Contents</font></strong></nav>
 <h1><a href="#1-drawing-from-various-distributions" id="1-drawing-from-various-distributions">1. Drawing from Various Distributions</a></h1>
 <p>After setting our observations to 10,000, we will first draw from a uniform distribution. We&rsquo;ll also set a seed so that we can reproduce our results.</p>
@@ -278,7 +277,9 @@ generate data with the following characteristics:</p>
 <li>$y_i = \beta x_i + \epsilon_i + \lambda v_i \nu_i$</li>
 </ul>
 <h2><a href="#41-the-dgp" id="41-the-dgp">4.1 The DGP</a></h2>
-<pre><code>.  program define dgp2, rclass 
+<pre><code>.  cap program drop dgp2
+
+.  program define dgp2, rclass 
   1.  syntax[, n(integer 250) beta(real 1) lambda(real 0)] 
   2.  drop _all 
   3.  set obs `n' 
@@ -296,7 +297,8 @@ generate data with the following characteristics:</p>
 
 </code></pre>
 <h2><a href="#42-monte-carlo" id="42-monte-carlo">4.2 Monte Carlo</a></h2>
-<p>Our first simulation will be over 1000 iterations with $\beta=1$, $\n=250$, and $\lambda=0.</p>
+<h3><a href="#monte-carlo-with-homoskedastic-data" id="monte-carlo-with-homoskedastic-data">Monte Carlo with Homoskedastic Data</a></h3>
+<p>Our first simulation will be over 1000 iterations with $\beta=1$, $n=250$, and $\lambda=0$.</p>
 <pre><code>. simulate ///
 &gt;         betahat_reg=r(betahat_reg) ///
 &gt;         se_reg=r(se_reg) ///
@@ -322,6 +324,69 @@ generate data with the following characteristics:</p>
 
 </code></pre>
 <p><strong>Is there a substantial difference between the two estimates of the standard errors?</strong></p>
+<p>The two stanard error estimates are quite similar, differing by less than .001</p>
 <p><strong>Do you get similar rejection rates with a critical value of |1.96|?</strong></p>
+<p>In order to test this, we can create test statistics for both standard error estimates.</p>
+<pre><code>. foreach e in reg rob {
+  2.         cap drop t_`e' 
+  3.         cap drop reject_`e'
+  4.         gen t_`e' = (betahat_`e' - 1)/se_`e'
+  5.         gen reject_`e'=abs(t_`e')&gt;=1.96
+  6. }
+
+. su reject_reg reject_rob
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+  reject_reg |      1,000        .046    .2095899          0          1
+  reject_rob |      1,000        .045    .2074079          0          1
+
+</code></pre>
+<p>Rejection rates are quite similar for regular and robust standard errors, at 4.6% and 4.5%, respectively.</p>
+<h3><a href="#monte-carlo-with-heteroskedastic-data" id="monte-carlo-with-heteroskedastic-data">Monte Carlo with Heteroskedastic Data</a></h3>
+<p>Now we will run the same simulation again, but change the value of $\lambda$ to 4, which will introduce Heteroskedasticity into the data generating process.</p>
+<pre><code>. simulate ///
+&gt;         betahat_reg=r(betahat_reg) ///
+&gt;         se_reg=r(se_reg) ///
+&gt;         betahat_rob=r(betahat_rob) ///
+&gt;         se_rob=r(se_rob), ///
+&gt;         nodots reps(1000) seed(12345) : dgp2, lambda(4)
+
+       command:  dgp2, lambda(4)
+   betahat_reg:  r(betahat_reg)
+        se_reg:  r(se_reg)
+   betahat_rob:  r(betahat_rob)
+        se_rob:  r(se_rob)
+
+
+. su
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ betahat_reg |      1,000    1.003897    .5482623  -.4474273   2.705177
+      se_reg |      1,000     .505284    .0349715   .4026354    .620545
+ betahat_rob |      1,000    1.003897    .5482623  -.4474273   2.705177
+      se_rob |      1,000    .5493346    .0521926   .3913465   .7334289
+
+</code></pre>
 <p><strong>Is there a substantial difference between the two estimates of the standard errors? If so, which one is closer, on average, to the tue standard deviation of beta-hat?</strong></p>
+<p>This time the standard errors are much more different from each other. The regular standard error is .505, while the robust standard error is sibstantially larger at .549. The true standard deviation of $\hat{beta}$ is .548, and our robust standard error is very close to this value.</p>
 <p><strong>Do you get similar rejection rates with a critical value of |1.96|?</strong></p>
+<pre><code>. foreach e in reg rob {
+  2.         cap drop t_`e' 
+  3.         cap drop reject_`e'
+  4.         gen t_`e' = (betahat_`e' - 1)/se_`e'
+  5.         gen reject_`e'=abs(t_`e')&gt;=1.96
+  6. }
+
+. su reject_reg reject_rob
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+  reject_reg |      1,000        .075    .2635231          0          1
+  reject_rob |      1,000        .059    .2357426          0          1
+
+</code></pre>
+<p>The rejection rate when using robust standard errors of 5.9% is close to to what we would expect with a critical value of 1.96. The rejection rate using regular standard errors, however, is 7.5%, meaning that we are rejecting the null hypothese substantially more often than we should. In otherwords, classical standard errors appear to work find if the assumption of homoskedasticity holds. When it does not, however, using classical standard errors will cause us to overestimate the precision of our analysis.</p>
+<p><strong>Will you ever run a regression with classical standard errors again?</strong></p>
+<p>Since there doesn&rsquo;t seem to be any real drawback to using robust standard errors even with homoskedastic data, and given the Monte Carlo results above, I don&rsquo;t currently see a reason why I would want to use classical standard errors when running regressions.</p>

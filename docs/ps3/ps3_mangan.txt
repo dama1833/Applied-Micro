@@ -51,7 +51,7 @@ cd "${pspath}ps3"
 
 Course: ECON 8848  
 Author: Dan Mangan  
-Collaborators:  
+Collaborators: Michelle Doughty and Hannah Denker
 Date: <<dd_display: c(current_date)>>
 
 
@@ -354,6 +354,7 @@ generate data with the following characteristics:
 
 ~~~~
 <<dd_do>>
+ cap program drop dgp2
  program define dgp2, rclass 
  syntax[, n(integer 250) beta(real 1) lambda(real 0)] 
  drop _all 
@@ -374,7 +375,9 @@ generate data with the following characteristics:
 
 ## 4.2 Monte Carlo
 
-Our first simulation will be over 1000 iterations with $\beta=1$, $\n=250$, and $\lambda=0. 
+### Monte Carlo with Homoskedastic Data
+
+Our first simulation will be over 1000 iterations with $\beta=1$, $n=250$, and $\lambda=0$. 
 
 ~~~~
 <<dd_do>>
@@ -390,11 +393,72 @@ su
 
 **Is there a substantial difference between the two estimates of the standard errors?**
 
+The two stanard error estimates are quite similar, differing by less than .001  
+
 **Do you get similar rejection rates with a critical value of |1.96|?**
+
+In order to test this, we can create test statistics for both standard error estimates. 
+
+~~~~
+<<dd_do>>
+foreach e in reg rob {
+	cap drop t_`e' 
+	cap drop reject_`e'
+	gen t_`e' = (betahat_`e' - 1)/se_`e'
+	gen reject_`e'=abs(t_`e')>=1.96
+}
+su reject_reg reject_rob
+<</dd_do>>
+~~~~
+
+Rejection rates are quite similar for regular and robust standard errors, at 4.6% and 4.5%, respectively. 
+
+### Monte Carlo with Heteroskedastic Data
+
+Now we will run the same simulation again, but change the value of $\lambda$ to 4, which will introduce 
+Heteroskedasticity into the data generating process. 
+
+~~~~
+<<dd_do>>
+simulate ///
+	betahat_reg=r(betahat_reg) ///
+	se_reg=r(se_reg) ///
+	betahat_rob=r(betahat_rob) ///
+	se_rob=r(se_rob), ///
+	nodots reps(1000) seed(12345) : dgp2, lambda(4)
+su
+<</dd_do>>
+~~~~
 
 **Is there a substantial difference between the two estimates of the standard errors? 
 If so, which one is closer, on average, to the tue standard deviation of beta-hat?** 
 
+This time the standard errors are much more different from each other. The regular standard error is .505, while
+the robust standard error is sibstantially larger at .549. The true standard deviation of $\hat{beta}$ is .548, and 
+our robust standard error is very close to this value. 
+
 **Do you get similar rejection rates with a critical value of |1.96|?**
 
+~~~~
+<<dd_do>>
+foreach e in reg rob {
+	cap drop t_`e' 
+	cap drop reject_`e'
+	gen t_`e' = (betahat_`e' - 1)/se_`e'
+	gen reject_`e'=abs(t_`e')>=1.96
+}
+su reject_reg reject_rob
+<</dd_do>>
+~~~~
+
+The rejection rate when using robust standard errors of 5.9% is close to to what we would expect with a critical value 
+of 1.96. The rejection rate using regular standard errors, however, is 7.5%, meaning that we are rejecting the null hypothese 
+substantially more often than we should. In otherwords, classical standard errors appear to work find if the assumption of 
+homoskedasticity holds. When it does not, however, using classical standard errors will cause us to overestimate the 
+precision of our analysis. 
+
 **Will you ever run a regression with classical standard errors again?**
+
+Since there doesn't seem to be any real drawback to using robust standard errors even with homoskedastic data, and 
+given the Monte Carlo results above, I don't currently see a reason why I would want to use classical standard errors when running regressions. 
+
