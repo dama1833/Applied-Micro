@@ -269,14 +269,58 @@ number of observations (_N) was 0, now 1,000
 <p><strong>Compare this distribution with the distribution with a sample size of 30.</strong></p>
 <p>We can see from the summary table printed above that increasing the sample size to 100 results in an average $\hat{\beta}$ that is even closer to the true value of 1 and a much smaller standard error. This is to be expected, as the standard error is proportional to the inverse of the square root of the sample size.</p>
 <h1><a href="#4-heteroskedasticity-and-robust-standard-errors" id="4-heteroskedasticity-and-robust-standard-errors">4. Heteroskedasticity and Robust Standard Errors</a></h1>
-<p>In order to examine the important of using Heteroskedasticity-robust standard errors, we will create a new program to<br />
-generate data with the following characteristics:<br />
-- $x \sim U(0,10)$<br />
-- $\epsilon \sim N(0,1)$<br />
-- $\nu \sim N(0,1)$<br />
-- $y_i = \beta x_i + \epsilon_i + \lambda v_i \nu_i$</p>
+<p>In order to examine the important of using heteroskedasticity-robust standard errors, we will create a new program to<br />
+generate data with the following characteristics:</p>
+<ul>
+<li>$x \sim U(0,10)$</li>
+<li>$\epsilon \sim N(0,1)$</li>
+<li>$\nu \sim N(0,1)$</li>
+<li>$y_i = \beta x_i + \epsilon_i + \lambda v_i \nu_i$</li>
+</ul>
 <h2><a href="#41-the-dgp" id="41-the-dgp">4.1 The DGP</a></h2>
+<pre><code>.  program define dgp2, rclass 
+  1.  syntax[, n(integer 250) beta(real 1) lambda(real 0)] 
+  2.  drop _all 
+  3.  set obs `n' 
+  4.  gen x = runiform(0, 10)
+  5.  gen e = rnormal()
+  6.  gen v = rnormal()
+  7.  gen y = `beta'*x + e + `lambda'*v*x
+  8.  reg y x 
+  9.  return scalar betahat_reg = _b[x]
+ 10.  return scalar se_reg = _se[x]
+ 11.  reg y x, robust
+ 12.  return scalar betahat_rob = _b[x]
+ 13.  return scalar se_rob = _se[x]
+ 14.  end
+
+</code></pre>
 <h2><a href="#42-monte-carlo" id="42-monte-carlo">4.2 Monte Carlo</a></h2>
+<p>Our first simulation will be over 1000 iterations with $\beta=1$, $\n=250$, and $\lambda=0.</p>
+<pre><code>. simulate ///
+&gt;         betahat_reg=r(betahat_reg) ///
+&gt;         se_reg=r(se_reg) ///
+&gt;         betahat_rob=r(betahat_rob) ///
+&gt;         se_rob=r(se_rob), ///
+&gt;         nodots reps(1000) seed(12345) : dgp2
+
+       command:  dgp2
+   betahat_reg:  r(betahat_reg)
+        se_reg:  r(se_reg)
+   betahat_rob:  r(betahat_rob)
+        se_rob:  r(se_rob)
+
+
+. su
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ betahat_reg |      1,000    .9996973    .0219213   .9156281   1.086807
+      se_reg |      1,000    .0219409    .0011526   .0181023   .0256893
+ betahat_rob |      1,000    .9996973    .0219213   .9156281   1.086807
+      se_rob |      1,000    .0218301    .0014449   .0179395   .0264589
+
+</code></pre>
 <p><strong>Is there a substantial difference between the two estimates of the standard errors?</strong></p>
 <p><strong>Do you get similar rejection rates with a critical value of |1.96|?</strong></p>
 <p><strong>Is there a substantial difference between the two estimates of the standard errors? If so, which one is closer, on average, to the tue standard deviation of beta-hat?</strong></p>
