@@ -51,7 +51,7 @@ cd "${pspath}ps3"
 
 Course: ECON 8848  
 Author: Dan Mangan  
-Collaborators: Michelle Doughty and Hannah Denker
+Collaborators: Michelle Doughty and Hannah Denker  
 Date: 19 Feb 2021
 
 
